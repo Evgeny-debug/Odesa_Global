@@ -191,26 +191,28 @@
         tg.expand(); 
         tg.ready();
 
+        // ДОДАНО: URL для запитів на Google Apps Script або локальний Express API
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzEJXS8WSjpqFkyR7KZSp8Ju-KT-Kl47DaZs5GQwOs5MOkpnq3tPaRkTtYJEIRDFcBN/exec';
+
         // ==========================================
         // СИСТЕМА ИЗБРАННОГО (Favorites)
         // ==========================================
         let favorites = JSON.parse(localStorage.getItem('odessa_favorites')) || [];
 
         function toggleFavorite(id, event) {
-            event.stopPropagation(); // Щоб клік не впливав на інші елементи
-            const numId = parseInt(id);
+            event.stopPropagation();
+            const strId = String(id);
             
-            if (favorites.includes(numId)) {
-                favorites = favorites.filter(favId => favId !== numId);
+            if (favorites.includes(strId)) {
+                favorites = favorites.filter(favId => favId !== strId);
                 tg.HapticFeedback.impactOccurred('light');
             } else {
-                favorites.push(numId);
+                favorites.push(strId);
                 tg.HapticFeedback.notificationOccurred('success');
             }
             
             localStorage.setItem('odessa_favorites', JSON.stringify(favorites));
             
-            // Перемальовуємо поточну вкладку
             if (document.getElementById('view-catalog').classList.contains('block')) {
                 applyFilters(); 
             } else if (document.getElementById('view-profile').classList.contains('block')) {
@@ -233,7 +235,20 @@
         // ПРОФІЛЬ ТА АДМІНКА
         // ==========================================
         function initProfile() {
-            const user = tg.initDataUnsafe?.user;
+            // Пытаемся получить данные от Telegram
+            let user = tg.initDataUnsafe?.user;
+
+            // 🛠 ЗАГЛУШКА ДЛЯ ЛОКАЛЬНОГО ТЕСТА: 
+            // Если Telegram не передал данные (мы в обычном браузере), делаем себя админом
+            if (!user) {
+                user = {
+                    first_name: "Local",
+                    last_name: "Admin",
+                    username: "admin" // Именно этот юзернейм даст права
+                };
+                console.log("Тестовый режим: включен локальный админ");
+            }
+
             if (user) {
                 document.getElementById('user-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
                 document.getElementById('user-nickname').innerText = user.username ? `@${user.username}` : 'Без юзернейму';
@@ -243,7 +258,7 @@
                 }
 
                 // Перевірка на адміна
-                if (user.username === 'evsdev' || user.username === 'admin') { // Додай свій юзернейм
+                if (user.username === 'evsdev' || user.username === 'admin') { 
                     document.getElementById('admin-panel-btn').classList.remove('hidden');
                     document.getElementById('admin-panel-btn').classList.add('block');
                 }
@@ -251,7 +266,6 @@
         }
 
         function openAdminPanel() {
-            // Надійний редирект для мобільних Telegram Web App
             window.location.assign('./admin.html');
         }
 
@@ -293,10 +307,10 @@
         // ДАНІ ТА РЕНДЕР
         // ==========================================
         const MOCK_DATA = [
-            { id: 1, category: 'beauty', subCategory: 'women', title: 'Манікюр та Педикюр. Таїрова', desc: 'Стерильний інструмент, гель-лак, нарощування. Досвід 5 років.', price: 'від 400 грн', contact: 'https://t.me/evsdev', location: 'Таїрова', date: 'Сьогодні' },
-            { id: 2, category: 'auto', subCategory: 'general', title: 'Ремонт ходової, СТО на Черемушках', desc: 'Швидка діагностика, заміна мастила, ремонт ходової.', price: 'Договірна', contact: 'https://t.me/evsdev', location: 'Черемушки', date: 'Вчора' },
-            { id: 3, category: 'masters', subCategory: 'home', title: 'Електрик. Ремонт будь-якої складності', desc: 'Встановлення розеток, збірка щитків, пошук обривів 24/7.', price: 'від 500 грн', contact: '+380930000000', location: 'Виїзд по Одесі', date: 'Сьогодні' },
-            { id: 4, category: 'zoo', subCategory: 'general', title: 'Грумінг собак та котів. Центр', desc: 'Стрижка, купання, чистка вух. Без наркозу!', price: '800 грн', contact: 'https://t.me/evsdev', location: 'Центр', date: 'Вчора' }
+            { id: '1', category: 'beauty', subCategory: 'women', title: 'Манікюр та Педикюр. Таїрова', desc: 'Стерильний інструмент, гель-лак, нарощування. Досвід 5 років.', price: 'від 400 грн', contact: 'https://t.me/evsdev', location: 'Таїрова', date: 'Сьогодні' },
+            { id: '2', category: 'auto', subCategory: 'general', title: 'Ремонт ходової, СТО на Черемушках', desc: 'Швидка діагностика, заміна мастила, ремонт ходової.', price: 'Договірна', contact: 'https://t.me/evsdev', location: 'Черемушки', date: 'Вчора' },
+            { id: '3', category: 'masters', subCategory: 'home', title: 'Електрик. Ремонт будь-якої складності', desc: 'Встановлення розеток, збірка щитків, пошук обривів 24/7.', price: 'від 500 грн', contact: '+380930000000', location: 'Виїзд по Одесі', date: 'Сьогодні' },
+            { id: '4', category: 'zoo', subCategory: 'general', title: 'Грумінг собак та котів. Центр', desc: 'Стрижка, купання, чистка вух. Без наркозу!', price: '800 грн', contact: 'https://t.me/evsdev', location: 'Центр', date: 'Вчора' }
         ];
 
         let currentData = [];
@@ -304,18 +318,24 @@
         let searchQuery = '';
         const container = document.getElementById('services-container');
 
-        // Спільна функція для генерації HTML картки (щоб не дублювати код)
         function createCardHTML(item, index) {
-            const isFav = favorites.includes(item.id);
+            const isFav = favorites.includes(String(item.id));
             const starClass = isFav ? 'star-active' : 'star-inactive';
-            const isLink = item.contact.startsWith('http');
-            const contactHref = isLink ? item.contact : `tel:${item.contact}`;
-            const contactText = isLink ? 'Написати' : 'Подзвонити';
+            
+            // ДОДАНО: Безпечна та розумна обробка посилань (@username, http, номер)
+            let contactHref = item.contact || '';
+            if (contactHref.startsWith('@')) {
+                contactHref = `https://t.me/${contactHref.substring(1)}`;
+            } else if (!contactHref.startsWith('http')) {
+                contactHref = `tel:${contactHref.replace(/\\D/g, '')}`;
+            }
+            
+            const contactText = contactHref.includes('t.me') ? 'Написати' : 'Подзвонити';
             const delay = index * 0.05;
 
             return `
                 <div class="spring-card glass-card rounded-2xl p-5 shadow-lg relative" style="animation-delay: ${delay}s">
-                    <button onclick="toggleFavorite(${item.id}, event)" class="absolute top-4 right-4 p-2 -mr-2 -mt-2 bouncy-active z-10">
+                    <button onclick="toggleFavorite('${item.id}', event)" class="absolute top-4 right-4 p-2 -mr-2 -mt-2 bouncy-active z-10">
                         <svg class="w-6 h-6 transition-colors duration-300 ${starClass}" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.148.621-.531 1.065-1.058.736l-4.764-2.818a.563.563 0 00-.582 0l-4.764 2.818c-.527.33-1.206-.115-1.058-.736l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602a.563.563 0 00.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
                         </svg>
@@ -323,7 +343,7 @@
 
                     <div class="flex justify-between items-start mb-3 pr-8">
                         <span class="text-xs font-bold uppercase tracking-wider text-brand bg-brand/10 px-2 py-1 rounded-md">${item.location}</span>
-                        <span class="text-xs text-gray-400">${item.date}</span>
+                        <span class="text-xs text-gray-400">${item.date || 'Сьогодні'}</span>
                     </div>
                     <h3 class="text-lg font-semibold leading-tight mb-2 pr-4">${item.title}</h3>
                     <p class="text-sm text-gray-300 mb-4 line-clamp-3">${item.desc}</p>
@@ -350,7 +370,7 @@
             const favContainer = document.getElementById('favorites-container');
             favContainer.innerHTML = '';
             
-            const favData = currentData.filter(item => favorites.includes(item.id));
+            const favData = currentData.filter(item => favorites.includes(String(item.id)));
             
             if (favData.length === 0) {
                 favContainer.innerHTML = `
@@ -406,13 +426,26 @@
             renderCards(filtered);
         }
 
+        // ДОДАНО: Завантаження реальних даних з API з Fallback-ом на локальні дані
         async function loadData() {
             try {
-                await new Promise(resolve => setTimeout(resolve, 600)); 
-                currentData = MOCK_DATA; 
-                applyFilters(); 
+                const response = await fetch(`${API_URL}?action=get_services`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        currentData = data;
+                    } else {
+                        currentData = MOCK_DATA; // Fallback якщо база ще порожня
+                    }
+                } else {
+                    throw new Error('API Response not ok');
+                }
             } catch (error) {
-                container.innerHTML = `<p class="text-center text-red-400 py-10">Помилка завантаження ⚠️</p>`;
+                console.warn("⚠️ Не вдалося завантажити дані з сервера. Використовуються тестові дані.", error);
+                currentData = MOCK_DATA; // Fallback для роботи без бекенду
+            } finally {
+                applyFilters();
             }
         }
 

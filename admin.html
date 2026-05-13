@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVS.DEV | Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #020617; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        input, select, textarea { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 12px; width: 100%; outline: none; }
+        input:focus { border-color: #3b82f6; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl font-bold mb-6 text-blue-500">Odessa Global <span class="text-white text-sm font-light">Admin</span></h1>
+
+        <section class="glass p-6 rounded-3xl mb-8">
+            <h2 class="text-lg font-semibold mb-4">📊 Статистика ядра</h2>
+            <div id="stats-content" class="grid grid-cols-2 gap-4 text-sm">
+                <div class="col-span-2 text-center text-gray-400 py-4">Загрузка данных...</div>
+            </div>
+            <button onclick="loadStats()" class="mt-4 w-full border border-gray-600 text-gray-400 py-2 rounded-xl text-xs hover:bg-gray-800 transition">Обновить стату</button>
+        </section>
+
+        <section class="glass p-6 rounded-3xl mb-8">
+            <h2 class="text-lg font-semibold mb-4">🆕 Добавить услугу</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 ml-2">Категория</label>
+                    <select id="service-category">
+                        <option value="">Загрузка категорий...</option>
+                    </select>
+                </div>
+                <input type="text" id="service-title" placeholder="Заголовок (например: Маникюр Центр)">
+                <textarea id="service-desc" placeholder="Описание услуги..." rows="3"></textarea>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="service-price" placeholder="Цена (грн)">
+                    <input type="text" id="service-location" placeholder="Район">
+                </div>
+                <input type="text" id="service-contact" placeholder="Контакт (@user или номер)">
+                <button onclick="addService()" id="add-btn" class="w-full bg-blue-600 py-3 rounded-xl font-bold hover:bg-blue-500 transition">Опубликовать</button>
+            </div>
+        </section>
+
+        <section class="glass p-6 rounded-3xl">
+            <h2 class="text-lg font-semibold mb-4">📁 Новая категория</h2>
+            <div class="space-y-4">
+                <input type="text" id="cat-name" placeholder="ID (например: beauty)">
+                <input type="text" id="cat-label" placeholder="Название (например: 💅 Красота)">
+                <button onclick="addCategory()" class="w-full border border-blue-600 text-blue-500 py-2 rounded-xl font-medium hover:bg-blue-600/10 transition">Создать категорию</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzEJXS8WSjpqFkyR7KZSp8Ju-KT-Kl47DaZs5GQwOs5MOkpnq3tPaRkTtYJEIRDFcBN/exec';
+
+        // ДОДАНО: Завантаження статистики з локального Express сервера
+        async function loadStats() {
+            const container = document.getElementById('stats-content');
+            try {
+                const res = await fetch('/api/stats');
+                if (!res.ok) throw new Error('API Error');
+                const stats = await res.json();
+                
+                container.innerHTML = `
+                    <div class="bg-black/30 p-3 rounded-xl">
+                        <div class="text-xs text-gray-400 mb-1">Слушаем чатов</div>
+                        <div class="text-xl font-bold text-blue-400">${stats.listened}</div>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl">
+                        <div class="text-xs text-gray-400 mb-1">Охват (людей)</div>
+                        <div class="text-xl font-bold text-green-400">~${stats.audience.toLocaleString('en-US')}</div>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl">
+                        <div class="text-xs text-gray-400 mb-1">База (Собрано)</div>
+                        <div class="text-xl font-bold text-white">${stats.collected}</div>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl">
+                        <div class="text-xs text-gray-400 mb-1">Элита (VIP)</div>
+                        <div class="text-xl font-bold text-purple-400">${stats.approved}</div>
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = `<div class="col-span-2 text-center text-red-400 py-2 text-xs">Ошибка загрузки. Сервер работает?</div>`;
+            }
+        }
+
+        // Загрузка категорий при старте
+        async function loadCategories() {
+            try {
+                const res = await fetch(`${API_URL}?action=get_categories`);
+                const cats = await res.json();
+                const select = document.getElementById('service-category');
+                select.innerHTML = cats.map(c => `<option value="${c.name}">${c.label}</option>`).join('');
+            } catch (e) {
+                console.error("Ошибка загрузки категорий Google Sheets");
+            }
+        }
+
+        async function addService() {
+            const btn = document.getElementById('add-btn');
+            btn.innerText = 'Публикация...';
+            btn.disabled = true;
+
+            const data = {
+                action: 'add_service',
+                category: document.getElementById('service-category').value,
+                title: document.getElementById('service-title').value,
+                description: document.getElementById('service-desc').value,
+                price: document.getElementById('service-price').value,
+                location: document.getElementById('service-location').value,
+                contact: document.getElementById('service-contact').value
+            };
+
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
+                alert('Услуга добавлена!');
+                location.reload();
+            } catch (e) {
+                alert('Ошибка публикации!');
+                btn.innerText = 'Опубликовать';
+                btn.disabled = false;
+            }
+        }
+
+        async function addCategory() {
+            const data = {
+                action: 'add_category',
+                name: document.getElementById('cat-name').value,
+                label: document.getElementById('cat-label').value
+            };
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
+                alert('Категория создана!');
+                document.getElementById('cat-name').value = '';
+                document.getElementById('cat-label').value = '';
+                loadCategories();
+            } catch (e) {
+                alert('Ошибка создания!');
+            }
+        }
+
+        // Ініціалізація
+        loadStats();
+        loadCategories();
+    </script>
+</body>
+</html>
