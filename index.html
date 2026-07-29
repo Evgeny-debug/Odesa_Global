@@ -3,453 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Odessa Global | Каталог</title>
-    
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: '#3b82f6', 
-                        dark: '#0f172a'
-                    }
-                }
-            }
-        }
-    </script>
-
+    <title>Справочник Измаил</title>
     <style>
+        :root {
+            /* Палитра новейшего Telegram (Night) */
+            --bg-black: #000000;
+            --bg-panel: #1c1c1e;
+            --glass-bg: rgba(28, 28, 30, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #0A84FF; /* iOS Blue */
+            --text-main: #ffffff;
+            --text-sub: #8e8e93;
+            --header-h: 56px;
+            --nav-h: 60px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-            min-height: 100vh;
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg-black);
+            color: var(--text-main);
+            padding-top: var(--header-h); 
+            padding-bottom: calc(var(--nav-h) + 10px);
+            font-size: 14px;
+            overflow-x: hidden;
         }
+
+        /* Ультра-глассморфизм */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        /* --- Шапка --- */
+        header {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--header-h);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 12px;
+            z-index: 1000;
+        }
+        .search-bar {
+            flex: 1; background: var(--bg-panel); border-radius: 10px; height: 36px;
+            display: flex; align-items: center; padding: 0 10px; gap: 8px; margin: 0 8px;
+        }
+        .search-bar input { background: transparent; border: none; color: #fff; width: 100%; outline: none; font-size: 15px; }
+        .search-bar input::placeholder { color: var(--text-sub); }
+        .header-icon { width: 28px; height: 28px; fill: var(--text-sub); }
+
+        /* --- Навигация --- */
+        nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-sub); width: 100%; cursor: pointer; }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
+        .nav-item span { font-size: 10px; font-weight: 500; }
+        .nav-item.active { color: var(--accent); }
+        .badge { position: absolute; background: #FF3B30; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 10px; top: -2px; right: 20px; border: 2px solid var(--glass-bg); }
+
+        /* --- Контейнер --- */
+        #app { padding: 4px; animation: fade 0.2s; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- Скролбары (Glovo Style) --- */
+        .h-scroll {
+            display: flex; gap: 8px; overflow-x: auto; padding: 8px 4px;
+            scroll-snap-type: x mandatory; scrollbar-width: none;
+        }
+        .h-scroll::-webkit-scrollbar { display: none; }
         
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        /* Мини-категории (Сториз) */
+        .story-bubble { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; scroll-snap-align: start; }
+        .story-img { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--accent); padding: 2px; background: var(--bg-black); object-fit: cover; }
+        .story-text { font-size: 11px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 100%; text-align: center; }
 
-        .glass-nav {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        /* Сетка категорий */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; }
+        .cat-card { background: var(--bg-panel); border-radius: 10px; padding: 10px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .cat-card img { width: 40px; height: 40px; object-fit: contain; }
+        .cat-card span { font-size: 12px; font-weight: 500; }
 
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Лента Рекламы */
+        .ad-card { background: var(--bg-panel); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+        .ad-img { width: 100%; height: 160px; object-fit: cover; }
+        .ad-info { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+        .ad-price { color: var(--accent); font-weight: 600; font-size: 15px; }
         
-        @keyframes springUp {
-            0% { opacity: 0; transform: translateY(30px) scale(0.95); }
-            60% { opacity: 1; transform: translateY(-5px) scale(1.02); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .spring-card {
-            animation: springUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            opacity: 0;
-        }
+        /* --- Чаты (Копия скриншота) --- */
+        .chat-tabs { display: flex; overflow-x: auto; gap: 8px; padding: 8px 12px; scrollbar-width: none; border-bottom: 1px solid var(--glass-border); }
+        .chat-tabs::-webkit-scrollbar { display: none; }
+        .chat-tab { background: transparent; color: var(--text-sub); font-size: 15px; white-space: nowrap; padding: 4px 8px; border-radius: 16px; font-weight: 500; }
+        .chat-tab.active { background: var(--glass-border); color: var(--text-main); }
+        
+        .chat-item { display: flex; align-items: center; gap: 10px; padding: 6px 12px; position: relative; }
+        .chat-item:active { background: var(--glass-border); }
+        .chat-item::after { content: ''; position: absolute; bottom: 0; left: 70px; right: 0; height: 1px; background: var(--glass-border); }
+        .chat-item:last-child::after { display: none; }
+        .chat-ava { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .chat-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; height: 48px; }
+        .chat-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+        .chat-name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-time { font-size: 13px; color: var(--text-sub); flex-shrink: 0; margin-left: 8px; }
+        .chat-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .chat-msg { font-size: 14px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pin-icon { width: 14px; height: 14px; fill: var(--text-sub); transform: rotate(45deg); }
 
-        .bouncy-active:active {
-            transform: scale(0.96);
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .fade-in { animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Золотой цвет для активной звезды */
-        .star-active { fill: #eab308; color: #eab308; }
-        .star-inactive { fill: none; color: #9ca3af; }
+        /* Утилиты */
+        .section-title { font-size: 16px; font-weight: 600; padding: 8px 12px 4px; }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; text-align: center; display: inline-block; width: 100%; }
+        
+        /* Профиль */
+        .profile-header { display: flex; flex-direction: column; align-items: center; padding: 20px 0 10px; gap: 8px; }
+        .profile-ava { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+        .menu-list { background: var(--bg-panel); border-radius: 12px; margin: 8px; overflow: hidden; }
+        .menu-item { padding: 12px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .menu-item:last-child { border: none; }
     </style>
 </head>
-<body class="p-4 pb-24">
+<body>
 
-    <header class="mb-4 mt-2 flex justify-between items-center fade-in">
-        <div>
-            <h1 class="text-2xl font-bold tracking-tight">Odessa <span class="text-brand">Global</span></h1>
-            <p class="text-sm text-gray-400 mt-1" id="header-desc">Зручний пошук послуг міста.</p>
+    <!-- Шапка со стеклом -->
+    <header class="glass">
+        <svg class="header-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <div class="search-bar">
+            <svg style="width:16px;height:16px;fill:#8e8e93" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" placeholder="Поиск услуг и контактов">
         </div>
-        <button onclick="switchTab('profile')" class="text-brand bg-white/5 border border-white/10 p-2.5 rounded-full hover:bg-white/10 transition-colors bouncy-active">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-        </button>
+        <img src="https://i.pravatar.cc/100?img=11" style="width:28px;height:28px;border-radius:50%;" alt="User">
     </header>
 
-    <div id="view-catalog" class="fade-in block">
-        <div class="relative mb-4">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </span>
-            <input type="text" id="search-input" onkeyup="handleSearch(this.value)" placeholder="Пошук: манікюр, Таїрова..." 
-                   class="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl focus:ring-brand focus:border-brand block pl-10 p-3 backdrop-blur-md outline-none transition-all placeholder-gray-500 shadow-inner">
+    <!-- Главный контейнер для SPA -->
+    <main id="app"></main>
+
+    <!-- Нижний бар со стеклом -->
+    <nav class="glass">
+        <div class="nav-item active" onclick="navigate('home')">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>Главная</span>
         </div>
-
-        <nav class="flex gap-3 overflow-x-auto hide-scroll mb-6 pb-2">
-            <button onclick="filterCategory('all')" id="btn-all" class="cat-btn px-4 py-2 rounded-full bg-brand text-white text-sm font-medium whitespace-nowrap transition-all bouncy-active">Всі</button>
-            <button onclick="filterCategory('beauty')" id="btn-beauty" class="cat-btn glass-card px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bouncy-active">💅 Краса</button>
-            <button onclick="filterCategory('auto')" id="btn-auto" class="cat-btn glass-card px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bouncy-active">🚗 СТО/Авто</button>
-            <button onclick="filterCategory('masters')" id="btn-masters" class="cat-btn glass-card px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bouncy-active">🛠 Майстри</button>
-            <button onclick="filterCategory('zoo')" id="btn-zoo" class="cat-btn glass-card px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all bouncy-active">🐶 Зоо</button>
-        </nav>
-
-        <main id="services-container" class="space-y-4">
-            <div class="flex justify-center items-center py-10" id="loader">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
-            </div>
-        </main>
-    </div>
-
-    <div id="view-profile" class="fade-in hidden space-y-6">
-        <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-24 bg-brand/20 blur-2xl"></div>
-            <div class="relative z-10">
-                <div id="user-avatar-container" class="w-20 h-20 mx-auto bg-gray-800 rounded-full border-2 border-brand flex items-center justify-center mb-3 overflow-hidden">
-                    <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                </div>
-                <h2 id="user-name" class="text-xl font-bold text-white">Гість</h2>
-                <p id="user-nickname" class="text-sm text-gray-400 mb-4">Авторизуйтесь через Telegram</p>
-                
-                <button id="admin-panel-btn" onclick="openAdminPanel()" class="hidden mx-auto bg-red-500/20 text-red-400 border border-red-500/30 px-5 py-2 rounded-xl text-sm font-bold hover:bg-red-500/30 transition-all bouncy-active">
-                    ⚙️ Панель Адміністратора
-                </button>
-            </div>
+        <div class="nav-item" onclick="navigate('services')" style="position: relative;">
+            <svg viewBox="0 0 24 24"><path d="M7 19h10V4H7v15zm-5-2h4V6H2v11zM18 6v11h4V6h-4z"/></svg>
+            <span>Услуги</span>
         </div>
-
-        <div>
-            <div class="flex justify-between items-end mb-4 px-1">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    Збережене
-                </h3>
-                <button onclick="clearFavorites()" class="text-sm text-gray-500 hover:text-red-400 transition-colors">Очистити все</button>
-            </div>
-            
-            <main id="favorites-container" class="space-y-4">
-                </main>
+        <div class="nav-item" onclick="navigate('chats')" style="position: relative;">
+            <div class="badge">4</div>
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+            <span>Чаты</span>
         </div>
-    </div>
-
-    <div id="view-add" class="fade-in hidden space-y-4">
-        <div class="glass-card rounded-2xl p-6 text-center bouncy-active">
-            <div class="text-4xl mb-4 transform transition hover:scale-110 duration-300">🚀</div>
-            <h2 class="text-xl font-bold mb-2">Отримуйте нових клієнтів</h2>
-            <p class="text-sm text-gray-400 mb-6">Ваша послуга буде додана до нашого каталогу, який щодня переглядають сотні жителів Одеси.</p>
-            <div class="bg-black/30 rounded-xl p-4 text-left mb-6 space-y-3">
-                <p class="text-sm flex items-center gap-2">✅ <span>Розміщення в потрібній категорії</span></p>
-                <p class="text-sm flex items-center gap-2">✅ <span>Прямі переходи в ваш Telegram</span></p>
-                <p class="text-sm flex items-center gap-2">✅ <span>Пріоритетна видача (VIP)</span></p>
-            </div>
-            <a href="https://t.me/evsdev" target="_blank" class="block w-full bg-brand hover:bg-blue-600 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-500/30 bouncy-active">
-                Залишити заявку
-            </a>
-        </div>
-    </div>
-
-    <div id="view-info" class="fade-in hidden space-y-4">
-        <div class="glass-card rounded-2xl p-6">
-            <h2 class="text-xl font-bold mb-2 text-brand">Odessa Global</h2>
-            <p class="text-sm text-gray-400 mb-4 leading-relaxed">Це інтелектуальний агрегатор послуг, створений для комфорту жителів Одеси. Всі послуги проходять автоматичну фільтрацію нашим AI-парсером.</p>
-            <p class="text-xs text-gray-500 mb-6 font-mono">Powered by EVS.DEV Architecture</p>
-            <h3 class="font-semibold text-white mb-3">Співпраця</h3>
-            <div class="space-y-3">
-                <a href="https://t.me/evsdev" class="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition bouncy-active">
-                    <span class="text-sm">📢 Замовити рекламу</span><span>👉</span>
-                </a>
-                <a href="https://t.me/evsdev" class="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition bouncy-active">
-                    <span class="text-sm">🤖 Замовити схожого бота</span><span>👉</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <nav class="fixed bottom-0 left-0 w-full glass-nav pb-safe z-50">
-        <div class="flex justify-around items-center p-3">
-            <button onclick="switchTab('catalog')" id="tab-btn-catalog" class="flex flex-col items-center gap-1 text-brand w-1/3 transition-colors bouncy-active">
-                <span class="text-xl">📋</span>
-                <span class="text-[10px] font-medium">Каталог</span>
-            </button>
-            <button onclick="switchTab('add')" id="tab-btn-add" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 w-1/3 transition-colors bouncy-active">
-                <span class="text-xl">➕</span>
-                <span class="text-[10px] font-medium">Додати</span>
-            </button>
-            <button onclick="switchTab('info')" id="tab-btn-info" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 w-1/3 transition-colors bouncy-active">
-                <span class="text-xl">ℹ️</span>
-                <span class="text-[10px] font-medium">Про нас</span>
-            </button>
+        <div class="nav-item" onclick="navigate('profile')">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>EVSpro</span>
         </div>
     </nav>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); 
-        tg.ready();
-
-        // ДОДАНО: URL для запитів на Google Apps Script або локальний Express API
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzEJXS8WSjpqFkyR7KZSp8Ju-KT-Kl47DaZs5GQwOs5MOkpnq3tPaRkTtYJEIRDFcBN/exec';
-
-        // ==========================================
-        // СИСТЕМА ИЗБРАННОГО (Favorites)
-        // ==========================================
-        let favorites = JSON.parse(localStorage.getItem('odessa_favorites')) || [];
-
-        function toggleFavorite(id, event) {
-            event.stopPropagation();
-            const strId = String(id);
+        // --- Демо-данные (Изображения с picsum / pravatar) ---
+        const views = {
             
-            if (favorites.includes(strId)) {
-                favorites = favorites.filter(favId => favId !== strId);
-                tg.HapticFeedback.impactOccurred('light');
-            } else {
-                favorites.push(strId);
-                tg.HapticFeedback.notificationOccurred('success');
-            }
-            
-            localStorage.setItem('odessa_favorites', JSON.stringify(favorites));
-            
-            if (document.getElementById('view-catalog').classList.contains('block')) {
-                applyFilters(); 
-            } else if (document.getElementById('view-profile').classList.contains('block')) {
-                renderFavorites();
-            }
-        }
+            // 1. ГЛАВНАЯ (Стиль Glovo + Лента)
+            home: `
+                <div class="h-scroll">
+                    <div class="story-bubble"><img src="https://picsum.photos/100?random=1" class="story-img"><span class="story-text">Акции</span></div>
+                    <div class="story-bubble"><img src="https://picsum.photos/100?random=2" class="story-img"><span class="story-text">Топ мастера</span></div>
+                    <div class="story-bubble"><img src="https://picsum.photos/100?random=3" class="story-img"><span class="story-text">Срочно</span></div>
+                    <div class="story-bubble"><img src="https://picsum.photos/100?random=4" class="story-img"><span class="story-text">Новинки</span></div>
+                    <div class="story-bubble"><img src="https://picsum.photos/100?random=5" class="story-img"><span class="story-text">Авто</span></div>
+                    <div class="story-bubble"><img src="https://picsum.photos/100?random=6" class="story-img"><span class="story-text">Еда</span></div>
+                </div>
 
-        function clearFavorites() {
-            tg.showConfirm('Видалити всі збережені послуги?', (confirmed) => {
-                if (confirmed) {
-                    favorites = [];
-                    localStorage.setItem('odessa_favorites', JSON.stringify(favorites));
-                    renderFavorites();
-                    tg.HapticFeedback.impactOccurred('medium');
-                }
-            });
-        }
+                <div class="grid-3">
+                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">🚗</span><span>Автосервис</span></div>
+                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">🔧</span><span>Ремонт</span></div>
+                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">💅</span><span>Красота</span></div>
+                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">🍔</span><span>Доставка еды</span></div>
+                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">💻</span><span>IT & Веб</span></div>
+                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">📦</span><span>Грузчики</span></div>
+                </div>
 
-        // ==========================================
-        // ПРОФІЛЬ ТА АДМІНКА
-        // ==========================================
-        function initProfile() {
-            // Пытаемся получить данные от Telegram
-            let user = tg.initDataUnsafe?.user;
-
-            // 🛠 ЗАГЛУШКА ДЛЯ ЛОКАЛЬНОГО ТЕСТА: 
-            // Если Telegram не передал данные (мы в обычном браузере), делаем себя админом
-            if (!user) {
-                user = {
-                    first_name: "Local",
-                    last_name: "Admin",
-                    username: "admin" // Именно этот юзернейм даст права
-                };
-                console.log("Тестовый режим: включен локальный админ");
-            }
-
-            if (user) {
-                document.getElementById('user-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-                document.getElementById('user-nickname').innerText = user.username ? `@${user.username}` : 'Без юзернейму';
-                
-                if (user.photo_url) {
-                    document.getElementById('user-avatar-container').innerHTML = `<img src="${user.photo_url}" class="w-full h-full object-cover">`;
-                }
-
-                // Перевірка на адміна
-                if (user.username === 'evsdev' || user.username === 'admin') { 
-                    document.getElementById('admin-panel-btn').classList.remove('hidden');
-                    document.getElementById('admin-panel-btn').classList.add('block');
-                }
-            }
-        }
-
-        function openAdminPanel() {
-            window.location.assign('./admin.html');
-        }
-
-        // ==========================================
-        // SPA ТА ВІЗУАЛ
-        // ==========================================
-        function switchTab(tabName) {
-            document.getElementById('view-catalog').classList.add('hidden');
-            document.getElementById('view-add').classList.add('hidden');
-            document.getElementById('view-info').classList.add('hidden');
-            document.getElementById('view-profile').classList.add('hidden');
-            
-            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => {
-                btn.classList.remove('text-brand');
-                btn.classList.add('text-gray-500');
-            });
-
-            document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            document.getElementById(`view-${tabName}`).classList.add('block');
-            
-            const bottomTab = document.getElementById(`tab-btn-${tabName}`);
-            if(bottomTab) {
-                bottomTab.classList.remove('text-gray-500');
-                bottomTab.classList.add('text-brand');
-            }
-
-            const desc = document.getElementById('header-desc');
-            if (tabName === 'catalog') desc.innerText = 'Зручний пошук послуг міста.';
-            if (tabName === 'add') desc.innerText = 'Розміщення в каталозі Odessa Global.';
-            if (tabName === 'info') desc.innerText = 'Екосистема послуг та реклама.';
-            if (tabName === 'profile') {
-                desc.innerText = 'Особистий кабінет та збережене.';
-                initProfile();
-                renderFavorites();
-            }
-        }
-
-        // ==========================================
-        // ДАНІ ТА РЕНДЕР
-        // ==========================================
-        const MOCK_DATA = [
-            { id: '1', category: 'beauty', subCategory: 'women', title: 'Манікюр та Педикюр. Таїрова', desc: 'Стерильний інструмент, гель-лак, нарощування. Досвід 5 років.', price: 'від 400 грн', contact: 'https://t.me/evsdev', location: 'Таїрова', date: 'Сьогодні' },
-            { id: '2', category: 'auto', subCategory: 'general', title: 'Ремонт ходової, СТО на Черемушках', desc: 'Швидка діагностика, заміна мастила, ремонт ходової.', price: 'Договірна', contact: 'https://t.me/evsdev', location: 'Черемушки', date: 'Вчора' },
-            { id: '3', category: 'masters', subCategory: 'home', title: 'Електрик. Ремонт будь-якої складності', desc: 'Встановлення розеток, збірка щитків, пошук обривів 24/7.', price: 'від 500 грн', contact: '+380930000000', location: 'Виїзд по Одесі', date: 'Сьогодні' },
-            { id: '4', category: 'zoo', subCategory: 'general', title: 'Грумінг собак та котів. Центр', desc: 'Стрижка, купання, чистка вух. Без наркозу!', price: '800 грн', contact: 'https://t.me/evsdev', location: 'Центр', date: 'Вчора' }
-        ];
-
-        let currentData = [];
-        let activeCategory = 'all';
-        let searchQuery = '';
-        const container = document.getElementById('services-container');
-
-        function createCardHTML(item, index) {
-            const isFav = favorites.includes(String(item.id));
-            const starClass = isFav ? 'star-active' : 'star-inactive';
-            
-            // ДОДАНО: Безпечна та розумна обробка посилань (@username, http, номер)
-            let contactHref = item.contact || '';
-            if (contactHref.startsWith('@')) {
-                contactHref = `https://t.me/${contactHref.substring(1)}`;
-            } else if (!contactHref.startsWith('http')) {
-                contactHref = `tel:${contactHref.replace(/\\D/g, '')}`;
-            }
-            
-            const contactText = contactHref.includes('t.me') ? 'Написати' : 'Подзвонити';
-            const delay = index * 0.05;
-
-            return `
-                <div class="spring-card glass-card rounded-2xl p-5 shadow-lg relative" style="animation-delay: ${delay}s">
-                    <button onclick="toggleFavorite('${item.id}', event)" class="absolute top-4 right-4 p-2 -mr-2 -mt-2 bouncy-active z-10">
-                        <svg class="w-6 h-6 transition-colors duration-300 ${starClass}" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.148.621-.531 1.065-1.058.736l-4.764-2.818a.563.563 0 00-.582 0l-4.764 2.818c-.527.33-1.206-.115-1.058-.736l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602a.563.563 0 00.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
-                        </svg>
-                    </button>
-
-                    <div class="flex justify-between items-start mb-3 pr-8">
-                        <span class="text-xs font-bold uppercase tracking-wider text-brand bg-brand/10 px-2 py-1 rounded-md">${item.location}</span>
-                        <span class="text-xs text-gray-400">${item.date || 'Сьогодні'}</span>
+                <div class="section-title">Горячие предложения</div>
+                <div style="padding: 0 4px;">
+                    <div class="ad-card">
+                        <img src="https://picsum.photos/600/300?random=10" class="ad-img">
+                        <div class="ad-info">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="font-size: 15px; font-weight:600;">Установка кондиционеров</span>
+                                <span class="ad-price">от 800 ₴</span>
+                            </div>
+                            <span style="font-size: 13px; color: var(--text-sub);">Быстрый выезд, гарантия на работу.</span>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-semibold leading-tight mb-2 pr-4">${item.title}</h3>
-                    <p class="text-sm text-gray-300 mb-4 line-clamp-3">${item.desc}</p>
-                    <div class="flex items-center justify-between mt-4">
-                        <span class="text-md font-bold text-white">${item.price}</span>
-                        <a href="${contactHref}" class="bg-brand hover:bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-xl transition-colors shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center">${contactText}</a>
+                    
+                    <div class="ad-card">
+                        <img src="https://picsum.photos/600/300?random=11" class="ad-img">
+                        <div class="ad-info">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="font-size: 15px; font-weight:600;">Суши сет "Осака" (Скидка)</span>
+                                <span class="ad-price">450 ₴</span>
+                            </div>
+                            <span style="font-size: 13px; color: var(--text-sub);">Бесплатная доставка по городу.</span>
+                        </div>
                     </div>
                 </div>
-            `;
-        }
+            `,
 
-        function renderCards(data) {
-            container.innerHTML = ''; 
-            if (data.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-10 fade-in">Нічого не знайдено 📭</p>';
-                return;
-            }
-            data.forEach((item, index) => {
-                container.insertAdjacentHTML('beforeend', createCardHTML(item, index));
-            });
-        }
+            // 2. ОТДЕЛЬНАЯ КАТЕГОРИЯ (Список услуг)
+            category: `
+                <div style="padding: 8px 12px; display:flex; gap: 8px; align-items:center;">
+                    <div onclick="navigate('home')" style="color:var(--accent); font-size:16px;">❮ Назад</div>
+                </div>
+                <div class="section-title" style="padding-top:0">Автосервис и СТО</div>
+                <div style="padding: 4px;">
+                    <div class="ad-card" style="display:flex; padding:8px; gap:10px; background: transparent; border-bottom: 1px solid var(--glass-border); border-radius: 0; margin:0;">
+                        <img src="https://picsum.photos/100/100?random=20" style="width:80px; height:80px; border-radius:8px; object-fit:cover;">
+                        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:4px;">
+                            <span style="font-weight:600; font-size:15px;">СТО "Измаил-Моторс"</span>
+                            <span style="font-size:13px; color:var(--text-sub);">Ходовая, замена масла.</span>
+                            <span class="ad-price">от 300 ₴</span>
+                        </div>
+                    </div>
+                    <div class="ad-card" style="display:flex; padding:8px; gap:10px; background: transparent; border-bottom: 1px solid var(--glass-border); border-radius: 0; margin:0;">
+                        <img src="https://picsum.photos/100/100?random=21" style="width:80px; height:80px; border-radius:8px; object-fit:cover;">
+                        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:4px;">
+                            <span style="font-weight:600; font-size:15px;">Автоэлектрик 24/7</span>
+                            <span style="font-size:13px; color:var(--text-sub);">Диагностика, сброс ошибок.</span>
+                            <span class="ad-price">от 500 ₴</span>
+                        </div>
+                    </div>
+                </div>
+            `,
 
-        function renderFavorites() {
-            const favContainer = document.getElementById('favorites-container');
-            favContainer.innerHTML = '';
-            
-            const favData = currentData.filter(item => favorites.includes(String(item.id)));
-            
-            if (favData.length === 0) {
-                favContainer.innerHTML = `
-                    <div class="text-center py-10 fade-in">
-                        <div class="text-4xl mb-3">⭐</div>
-                        <p class="text-gray-400 text-sm">Ви ще нічого не додали в обране.</p>
-                        <p class="text-gray-500 text-xs mt-1">Натисніть на зірочку в каталозі.</p>
-                    </div>`;
-                return;
-            }
-
-            favData.forEach((item, index) => {
-                favContainer.insertAdjacentHTML('beforeend', createCardHTML(item, index));
-            });
-        }
-
-        // --- ЛОГІКА ПОШУКУ ТА ФІЛЬТРАЦІЇ ---
-        function handleSearch(query) {
-            searchQuery = query.toLowerCase().trim();
-            applyFilters();
-        }
-
-        function filterCategory(category) {
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.remove('bg-brand', 'text-white');
-                btn.classList.add('glass-card');
-            });
-            const activeBtn = document.getElementById(`btn-${category}`);
-            if(activeBtn) {
-                activeBtn.classList.remove('glass-card');
-                activeBtn.classList.add('bg-brand', 'text-white');
-            }
-            
-            activeCategory = category;
-            applyFilters();
-        }
-
-        function applyFilters() {
-            let filtered = currentData;
-            
-            if (activeCategory !== 'all') {
-                filtered = filtered.filter(item => item.category === activeCategory);
-            }
-            
-            if (searchQuery !== '') {
-                filtered = filtered.filter(item => 
-                    item.title.toLowerCase().includes(searchQuery) || 
-                    item.desc.toLowerCase().includes(searchQuery) ||
-                    item.location.toLowerCase().includes(searchQuery)
-                );
-            }
-            
-            renderCards(filtered);
-        }
-
-        // ДОДАНО: Завантаження реальних даних з API з Fallback-ом на локальні дані
-        async function loadData() {
-            try {
-                const response = await fetch(`${API_URL}?action=get_services`);
+            // 3. ЧАТЫ (Имитация скриншота iOS Telegram)
+            chats: `
+                <div class="chat-tabs glass" style="position: sticky; top: var(--header-h); z-index: 99;">
+                    <div class="chat-tab active">Все</div>
+                    <div class="chat-tab">Клиенты</div>
+                    <div class="chat-tab">Группы <span class="badge" style="position:static; padding:1px 4px; margin-left:4px;">4</span></div>
+                    <div class="chat-tab">Работа</div>
+                </div>
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        currentData = data;
-                    } else {
-                        currentData = MOCK_DATA; // Fallback якщо база ще порожня
-                    }
-                } else {
-                    throw new Error('API Response not ok');
-                }
-            } catch (error) {
-                console.warn("⚠️ Не вдалося завантажити дані з сервера. Використовуються тестові дані.", error);
-                currentData = MOCK_DATA; // Fallback для роботи без бекенду
-            } finally {
-                applyFilters();
+                <div style="background: var(--bg-black); padding-bottom: 10px;">
+                    <!-- Чат 1 -->
+                    <div class="chat-item">
+                        <img src="https://picsum.photos/100?random=30" class="chat-ava">
+                        <div class="chat-content">
+                            <div class="chat-top">
+                                <span class="chat-name">FIXOMATua</span>
+                                <span class="chat-time">22.04</span>
+                            </div>
+                            <div class="chat-bottom">
+                                <span class="chat-msg">Виталий Системник Чистка Жиз)</span>
+                                <svg class="pin-icon" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h4.8v6h2.4v-6H18v-2l-2-2z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Чат 2 -->
+                    <div class="chat-item">
+                        <img src="https://i.pravatar.cc/100?img=5" class="chat-ava">
+                        <div class="chat-content">
+                            <div class="chat-top">
+                                <span class="chat-name">Кицюнічка 🫶😻</span>
+                                <span class="chat-time">18.07</span>
+                            </div>
+                            <div class="chat-bottom">
+                                <span class="chat-msg">📞 Пропущенный звонок</span>
+                                <svg class="pin-icon" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h4.8v6h2.4v-6H18v-2l-2-2z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Чат 3 -->
+                    <div class="chat-item">
+                        <img src="https://picsum.photos/100?random=31" class="chat-ava">
+                        <div class="chat-content">
+                            <div class="chat-top">
+                                <span class="chat-name">Мамуля</span>
+                                <span class="chat-time" style="color: var(--accent);">✓✓ 07:03</span>
+                            </div>
+                            <div class="chat-bottom">
+                                <span class="chat-msg">Реакция ❤️ на Ваше сообщение</span>
+                                <span style="font-size:12px; color:#ff3b30">❤️</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Чат 4 -->
+                    <div class="chat-item">
+                        <img src="https://picsum.photos/100?random=32" class="chat-ava">
+                        <div class="chat-content">
+                            <div class="chat-top">
+                                <span class="chat-name">Вовчик 🔇</span>
+                                <span class="chat-time" style="color: var(--accent);">✓✓ Вт</span>
+                            </div>
+                            <div class="chat-bottom">
+                                <span class="chat-msg">Реакция ❤️ на Ваше сообщение</span>
+                                <span style="font-size:12px; color:var(--text-sub)">🤍</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Чат 5 -->
+                    <div class="chat-item">
+                        <img src="https://picsum.photos/100?random=33" class="chat-ava">
+                        <div class="chat-content">
+                            <div class="chat-top">
+                                <span class="chat-name">IQ 100% 🔇</span>
+                                <span class="chat-time" style="color: var(--accent);">✓ 18:13</span>
+                            </div>
+                            <div class="chat-bottom">
+                                <span class="chat-msg">Вы: ▶ Решил немного руки потрени...</span>
+                                <svg class="pin-icon" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h4.8v6h2.4v-6H18v-2l-2-2z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Чат 6 -->
+                    <div class="chat-item">
+                        <img src="https://picsum.photos/100?random=34" class="chat-ava">
+                        <div class="chat-content">
+                            <div class="chat-top">
+                                <span class="chat-name">Odessa veter | chat 🔇</span>
+                                <span class="chat-time">23:14</span>
+                            </div>
+                            <div class="chat-bottom">
+                                <span class="chat-msg">ЭРУС: Ваш 🐷 пэнис Має масу 5...</span>
+                                <div style="background:var(--bg-panel); border-radius:10px; padding: 2px 6px; font-size:11px; color:var(--text-sub)">3,1K</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+
+            // 4. ПРОФИЛЬ EVSpro
+            profile: `
+                <div class="profile-header">
+                    <img src="https://i.pravatar.cc/150?img=11" class="profile-ava">
+                    <span style="font-size: 20px; font-weight: 600;">Евгений Сычов</span>
+                    <span style="font-size: 14px; color: var(--accent);">@EVSpro / EVSdev</span>
+                </div>
+                
+                <div class="menu-list">
+                    <div class="menu-item">
+                        <span style="font-size: 15px;">Мои услуги (Реклама)</span>
+                        <span style="color: var(--text-sub);">3 ❯</span>
+                    </div>
+                    <div class="menu-item">
+                        <span style="font-size: 15px;">Мои отклики (Работа)</span>
+                        <span style="color: var(--text-sub);">12 ❯</span>
+                    </div>
+                    <div class="menu-item">
+                        <span style="font-size: 15px;">Избранное</span>
+                        <span style="color: var(--text-sub);">❯</span>
+                    </div>
+                </div>
+
+                <div class="menu-list">
+                    <div class="menu-item">
+                        <span style="font-size: 15px; color: #FF3B30;">Выйти из аккаунта</span>
+                    </div>
+                </div>
+            `,
+
+            // 5. УСЛУГИ (Биржа)
+            services: `
+                <div class="section-title">Биржа задач (Ищу исполнителя)</div>
+                <div style="padding: 4px;">
+                    <div class="ad-card" style="padding: 12px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <span style="font-weight:600; font-size:15px; width:70%;">Сделать Landing Page на JS (Без библиотек)</span>
+                            <span style="color:var(--accent); font-weight:600;">2000 ₴</span>
+                        </div>
+                        <span style="font-size:13px; color:var(--text-sub);">Нужен одностраничник для продажи свечей. Дизайн компактный, темная тема (glassmorphism). Оплата на карту после сдачи архива.</span>
+                        <button class="btn" style="margin-top:4px;">Откликнуться (EVSdev)</button>
+                    </div>
+
+                    <div class="ad-card" style="padding: 12px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <span style="font-weight:600; font-size:15px; width:70%;">Починить бойлер (Центр)</span>
+                            <span style="color:var(--accent); font-weight:600;">500 ₴</span>
+                        </div>
+                        <span style="font-size:13px; color:var(--text-sub);">Капает снизу, воду перекрыли. Нужно сегодня до вечера.</span>
+                        <button class="btn" style="margin-top:4px;">Откликнуться</button>
+                    </div>
+                </div>
+            `
+        };
+
+        // Логика роутинга SPA
+        function navigate(view) {
+            document.getElementById('app').innerHTML = views[view];
+            
+            // Обновление активной кнопки в нижнем меню
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const indexMap = { 'home': 0, 'services': 1, 'chats': 2, 'profile': 3 };
+            if (indexMap[view] !== undefined) {
+                document.querySelectorAll('.nav-item')[indexMap[view]].classList.add('active');
             }
+            
+            window.scrollTo(0,0);
         }
 
-        loadData();
+        // Запуск приложения
+        navigate('home');
     </script>
 </body>
 </html>
