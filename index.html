@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,6 +6,7 @@
     <title>Community Premium SuperApp</title>
     <style>
         :root {
+            /* Strict Premium Dark Glassmorphism */
             --bg-main: #0b0f14;
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.06);
@@ -14,6 +14,7 @@
             --text-primary: #e6e9ec;
             --text-secondary: #7e8b99;
             --accent: #5a7b9e;
+            --accent-gold: #c5a861; /* Muted gold for premium/tokens, NO NEON */
             --spacing: 8px;
             --radius-sm: 8px;
             --radius-md: 14px;
@@ -116,6 +117,7 @@
             letter-spacing: 0.5px;
         }
         .header-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--glass-highlight); color: var(--text-primary); }
+        .header-tag.premium { color: var(--accent-gold); border: 1px solid rgba(197, 168, 97, 0.3); }
 
         .scroll-x { 
             display: flex; 
@@ -133,10 +135,16 @@
         .service-title { font-size: 10px; color: var(--text-secondary); text-align: center; white-space: nowrap; }
 
         .promo-card { width: calc(100vw - 16px); height: 130px; border-radius: var(--radius-md); overflow: hidden; position: relative; cursor: pointer; }
-        .promo-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
+        .promo-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
         .promo-content { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--spacing); background: linear-gradient(transparent, #000000e6); }
         .promo-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
         .promo-subtitle { font-size: 11px; color: var(--text-secondary); }
+
+        .vip-card { width: 220px; border-radius: var(--radius-md); overflow: hidden; cursor: pointer; border: 1px solid rgba(197, 168, 97, 0.15); }
+        .vip-img { width: 100%; height: 120px; object-fit: cover; }
+        .vip-body { padding: var(--spacing); background: var(--glass-bg); }
+        .vip-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vip-price { font-size: 13px; font-weight: 600; color: var(--accent-gold); margin-top: 2px; }
 
         .vacancy-card { width: 150px; padding: var(--spacing); display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
         .vac-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -164,23 +172,33 @@
         .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 12px; padding: 0 12px; outline: none; }
         .chat-send-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--glass-highlight); border: none; border-radius: var(--radius-sm); color: var(--text-primary); cursor: pointer; }
 
-        /* Cabinet */
+        /* Cabinet & Lists */
         .cab-header { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: var(--spacing); }
         .cab-avatar { width: 56px; height: 56px; border-radius: var(--radius-sm); }
-        .cab-info h2 { font-size: 16px; font-weight: 500; }
+        .cab-info h2 { font-size: 16px; font-weight: 500; letter-spacing: 0.5px; }
         .cab-info p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
         
         .cab-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing); margin-bottom: 16px; }
         .stat-box { padding: 12px; display: flex; flex-direction: column; gap: 4px; }
         .stat-val { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; }
+        
+        /* Tokens Box */
+        .token-box { grid-column: span 2; border-color: rgba(197, 168, 97, 0.2); background: rgba(197, 168, 97, 0.03); display: flex; flex-direction: row; justify-content: space-between; align-items: center;}
+        .btn-earn { font-size: 10px; background: rgba(197, 168, 97, 0.15); color: var(--accent-gold); border: 1px solid rgba(197, 168, 97, 0.3); padding: 6px 12px; border-radius: 20px; font-weight: 600; cursor: pointer; }
 
         .btn-action { width: 100%; padding: 12px; margin-bottom: var(--spacing); display: flex; align-items: center; gap: 10px; background: transparent; border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 12px; font-weight: 500; text-align: left; cursor: pointer; }
         .btn-action svg { color: var(--text-secondary); }
         .btn-action .chevron { margin-left: auto; opacity: 0.5; }
+        .btn-garant { background: rgba(90, 123, 158, 0.2); border-color: var(--accent); color: var(--text-primary); justify-content: center; font-weight: 600; }
 
-        /* Favorites View */
-        .fav-empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 13px; }
+        /* Lists (Cart/Fav) */
+        .list-empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 12px; line-height: 1.5;}
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: var(--spacing); }
+        .list-item-info { display: flex; flex-direction: column; gap: 4px; }
+        .list-item-title { font-size: 12px; font-weight: 500; }
+        .list-item-price { font-size: 13px; font-weight: 600; color: var(--accent); }
+        .btn-remove { background: transparent; border: none; color: #ff5e5e; font-size: 18px; cursor: pointer; opacity: 0.7; }
 
         /* Floating Nav */
         .floating-nav {
@@ -195,17 +213,18 @@
             border-radius: var(--radius-lg);
             z-index: 100;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); width: 25%; cursor: pointer; transition: color 0.2s; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); width: 20%; cursor: pointer; transition: color 0.2s; }
         .nav-item svg { width: 18px; height: 18px; stroke-width: 1.5; }
         .nav-label { font-size: 9px; font-weight: 500; text-transform: uppercase; }
         .nav-item.active { color: var(--text-primary); }
+        .cart-badge { position: absolute; top: 6px; right: 22%; background: var(--accent); color: #fff; font-size: 8px; width: 14px; height: 14px; display: none; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; }
 
         /* Modal Overlay */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(12px);
             z-index: 1000;
             display: none;
             align-items: center;
@@ -223,9 +242,14 @@
             animation: zoomIn 0.2s ease-out;
         }
         @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-        .modal-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-        .modal-close { margin-top: 8px; width: 100%; padding: 10px; background: var(--glass-highlight); border: none; border-radius: var(--radius-sm); color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; }
+        .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+        .modal-price { font-size: 18px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+        .modal-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px; }
+        
+        .modal-btn { width: 100%; padding: 12px; background: var(--glass-highlight); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .modal-btn.primary { background: rgba(90, 123, 158, 0.2); border-color: var(--accent); }
+        .modal-btn-group { display: flex; gap: var(--spacing); }
+        .modal-btn-group .modal-btn { flex: 1; }
         
         .onboarding-select {
             width: 100%;
@@ -257,21 +281,29 @@
     <div id="app">
         <!-- LOBBY -->
         <div id="view-lobby" class="view active">
+            
+            <div class="section-header">Рекламные баннеры <span class="header-tag premium">Платный Топ</span></div>
+            <div class="scroll-x" id="promo-wrap" style="border-radius: var(--radius-md);"></div>
+
             <div class="section-header">Категории услуг <span class="header-tag">Каталог</span></div>
             <div class="scroll-x" id="services-wrap"></div>
 
-            <div class="section-header">Рекламные постеры <span class="header-tag">Топ</span></div>
-            <div class="scroll-x" id="promo-wrap" style="border-radius: var(--radius-md);"></div>
+            <div class="section-header">Недвижимость <span class="header-tag premium">VIP Топ</span></div>
+            <div class="scroll-x" id="realty-wrap"></div>
+
+            <div class="section-header">Автомобили <span class="header-tag premium">VIP Топ</span></div>
+            <div class="scroll-x" id="auto-wrap"></div>
 
             <div class="section-header">Вакансии и подработка <span class="header-tag">Работа</span></div>
             <div class="scroll-x" id="vacancies-wrap"></div>
 
-            <div class="section-header">Барахолка и маркет <span class="header-tag">Объявления</span></div>
+            <div class="section-header">Барахолка и маркет <span class="header-tag">Бесплатно</span></div>
             <div class="market-grid" id="market-wrap"></div>
         </div>
 
         <!-- CHAT -->
         <div id="view-chat" class="view">
+            <div class="section-header" style="margin-top:0;">Общий чат сообщества</div>
             <div class="chat-list" id="chat-wrap"></div>
             <div class="glass chat-input-wrapper">
                 <input type="text" class="chat-input" placeholder="Сообщение в общую группу...">
@@ -281,11 +313,22 @@
             </div>
         </div>
 
+        <!-- CART -->
+        <div id="view-cart" class="view">
+            <div class="section-header" style="margin-top:0;">Корзина покупок</div>
+            <div id="cart-container">
+                <div class="list-empty">Корзина пуста.<br>Добавляйте товары для безопасной сделки.</div>
+            </div>
+            <button class="glass btn-action btn-garant" id="cart-checkout-btn" style="display:none; margin-top:16px;" onclick="checkoutCart()">
+                🛡️ Оформить через Гаранта
+            </button>
+        </div>
+
         <!-- FAVORITES -->
         <div id="view-fav" class="view">
-            <div class="section-header">Избранное</div>
+            <div class="section-header" style="margin-top:0;">Избранное</div>
             <div id="fav-container">
-                <div class="fav-empty">Здесь пока ничего нет.<br>Нажимайте на карточки, чтобы сохранить их.</div>
+                <div class="list-empty">Здесь пока ничего нет.<br>Сохраняйте карточки для быстрого доступа.</div>
             </div>
         </div>
 
@@ -294,18 +337,21 @@
             <div class="glass cab-header">
                 <img src="https://i.pravatar.cc/150?img=11" class="cab-avatar" alt="User">
                 <div class="cab-info">
-                    <h2>EVSpro</h2>
+                    <h2>EVS.PRO</h2>
                     <p id="cab-loc-text">Локация: Одесса (Город)</p>
                 </div>
             </div>
 
             <div class="cab-stats">
-                <div class="glass stat-box">
-                    <div class="stat-val">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
-                        1 450
+                <div class="glass stat-box token-box">
+                    <div>
+                        <div class="stat-val" style="color: var(--accent-gold);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                            <span id="token-balance">1 450</span>
+                        </div>
+                        <div class="stat-label">Суспільствокоїн</div>
                     </div>
-                    <div class="stat-label">Суспільствокоїн</div>
+                    <button class="btn-earn" onclick="earnTokens()">💰 Заработать</button>
                 </div>
                 <div class="glass stat-box">
                     <div class="stat-val">
@@ -314,23 +360,30 @@
                     </div>
                     <div class="stat-label">Активных постов</div>
                 </div>
+                <div class="glass stat-box">
+                    <div class="stat-val">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        12
+                    </div>
+                    <div class="stat-label">Успешных сделок</div>
+                </div>
             </div>
 
             <div class="section-header" style="margin-top: 24px;">Управление</div>
             
             <button class="glass btn-action" onclick="openLocationModal()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path></svg>
-                🔄 Переезжаю (Сменить город/село)
+                🔄 Переезжаю (Сменить локацию)
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
-            <button class="glass btn-action" onclick="alert('Форма добавления услуги')">
+            <button class="glass btn-action" onclick="alert('Выбор категории для бесплатного размещения')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Добавить услугу
+                Добавить бесплатное объявление
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
-            <button class="glass btn-action" onclick="alert('Форма постера')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
-                Выставить промо-постер (ТОП)
+            <button class="glass btn-action" style="border-color: rgba(197, 168, 97, 0.3);" onclick="alert('Оплата размещения баннера в VIP-топе. Списание баланса.')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span style="color: var(--accent-gold);">Купить VIP / Промо-постер</span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
         </div>
@@ -346,6 +399,11 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             <span class="nav-label">Чат</span>
         </div>
+        <div class="nav-item" onclick="switchTab('cart', this)" style="position:relative;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="nav-label">Корзина</span>
+            <div class="cart-badge" id="cart-badge">0</div>
+        </div>
         <div class="nav-item" onclick="switchTab('fav', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
             <span class="nav-label">Избранное</span>
@@ -360,9 +418,18 @@
     <div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
         <div class="glass modal-card" onclick="event.stopPropagation()">
             <div class="modal-title" id="m-title">Название</div>
+            <div class="modal-price" id="m-price"></div>
             <div class="modal-desc" id="m-desc">Описание позиции, контакты и условия предоставления.</div>
-            <button class="modal-close" onclick="saveToFav()">⭐ В избранное</button>
-            <button class="modal-close" style="background:var(--glass-bg); border:1px solid var(--glass-border);" onclick="closeDetailModal()">Закрыть</button>
+            
+            <button class="modal-btn primary" style="margin-bottom: var(--spacing);" onclick="buyViaGarant()">
+                🛡️ Безопасная сделка (Админ-Гарант)
+            </button>
+            
+            <div class="modal-btn-group">
+                <button class="modal-btn" onclick="addToCart()">🛒 В корзину</button>
+                <button class="modal-btn" onclick="saveToFav()">⭐ В избранное</button>
+            </div>
+            <button class="modal-btn" style="margin-top: var(--spacing); background: transparent; border-color: transparent;" onclick="closeDetailModal()">Закрыть</button>
         </div>
     </div>
 
@@ -389,7 +456,7 @@
                     <option value="с. Фонтанка (Село)">с. Фонтанка</option>
                 </optgroup>
             </select>
-            <button class="modal-close" style="background: var(--accent);" onclick="applyLocation()">Подтвердить и войти</button>
+            <button class="modal-btn primary" style="margin-top: 8px;" onclick="applyLocation()">Подтвердить и войти</button>
         </div>
     </div>
 
@@ -416,6 +483,18 @@
             document.getElementById('location-modal').classList.remove('active');
         }
 
+        // === TOKEN LOGIC ===
+        let tokenBalance = 1450;
+        function earnTokens() {
+            if(confirm("Задание: Подписаться на Telegram-канал партнера.\nНаграда: +50 Суспільствокоїн.\n\nПерейти к выполнению?")) {
+                setTimeout(() => {
+                    tokenBalance += 50;
+                    document.getElementById('token-balance').innerText = tokenBalance;
+                    alert("Успешно! Начислено 50 токенов.");
+                }, 800);
+            }
+        }
+
         // === SVG GENERATOR ===
         const svgs = {
             car: '<rect x="3" y="8" width="18" height="4" rx="1"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/><path d="M4 8l2-4h12l2 4"/>',
@@ -425,108 +504,103 @@
             cleaning: '<path d="M12 2l3 7h-6z"/><path d="M12 9v13"/><line x1="8" y1="22" x2="16" y2="22"/>',
             briefcase: '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
             book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
-            laptop: '<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/>',
-            camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
-            coffee: '<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'
+            laptop: '<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/>'
         };
         const drawSvg = (path) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 
-        // === DATA INJECTION WITH FULL DETAILS ===
-        const services = [
-            { t: 'Такси', i: svgs.car, d: 'Городские и межгородские поездки. Подача авто 5 минут. Контакт: @taxidriver' },
-            { t: 'Грузы', i: svgs.truck, d: 'Перевозка мебели, стройматериалов. Грузчики. Контакт: +380991234567' },
-            { t: 'Ремонт', i: svgs.tool, d: 'Сантехника, электрика, мелкий бытовой ремонт. Выезд мастера бесплатный.' },
-            { t: 'Красота', i: svgs.scissors, d: 'Маникюр, стрижки, визаж на дому или в студии.' },
-            { t: 'Клининг', i: svgs.cleaning, d: 'Уборка квартир после ремонта и генеральная.' },
-            { t: 'Бизнес', i: svgs.briefcase, d: 'Бухгалтерские услуги, регистрация ФОП, юридическая помощь.' },
-            { t: 'Обучение', i: svgs.book, d: 'Репетиторы по математике, английскому, программированию.' },
-            { t: 'IT', i: svgs.laptop, d: 'Создание сайтов, настройка рекламы, ремонт ПК и телефонов.' },
-            { t: 'Фото', i: svgs.camera, d: 'Свадебная и портретная фотосессия, предметная съемка для маркетплейсов.' },
-            { t: 'Еда', i: svgs.coffee, d: 'Домашняя выпечка, полуфабрикаты, крафтовый сыр и кофе.' }
-        ];
-        const sWrap = document.getElementById('services-wrap');
-        services.forEach(s => {
-            sWrap.innerHTML += `<div class="service-box" onclick="openDetail('${s.t}', '${s.d}')"><div class="glass service-icon-wrap">${drawSvg(s.i)}</div><div class="service-title">${s.t}</div></div>`;
-        });
-
+        // === DATA INJECTION ===
         const promos = [
-            { t: 'Детейлинг Авто', st: 'Комплекс со скидкой 20%', i: '111', d: 'Полная полировка кузова и химчистка салона со скидкой по промокоду "Суспільство".' },
-            { t: 'Доставка Пиццы', st: '24/7 по всему городу', i: '225', d: 'Горячая пицца за 30 минут или бесплатно.' },
-            { t: 'Разработка Сайтов', st: 'Под ключ (SPA)', i: '0', d: 'Создание современных одностраничных приложений с эффектом стекла.' },
-            { t: 'Ремонт Квартир', st: 'Смета за 1 час', i: '122', d: 'Профессиональная бригада строителей.' },
-            { t: 'Аренда Склада', st: 'От 10 до 500 кв.м.', i: '107', d: 'Сухие складские помещения под охраной.' },
-            { t: 'Юридические услуги', st: 'Консультация бесплатно', i: '155', d: 'Помощь в решении споров.' },
-            { t: 'Барбершоп', st: 'Стрижка + Борода', i: '237', d: 'Лучшие мастера города жду вас.' },
-            { t: 'Магазин Техники', st: 'Гарантия 2 года', i: '160', d: 'Оригинальные гаджеты по лучшим ценам.' },
-            { t: 'Спортзал', st: 'Годовой абонемент', i: '272', d: 'Современное железо и тренеры.' },
-            { t: 'Доставка Цветов', st: 'Свежие розы', i: '112', d: 'Букеты с открыткой за 1 час.' }
+            { t: 'Детейлинг Центр', st: 'Комплекс со скидкой 20%', i: '111', d: 'Полная полировка кузова и химчистка. Топ-размещение.' },
+            { t: 'Доставка Пиццы', st: '24/7 по городу', i: '225', d: 'Горячая пицца за 30 минут. Промо-спонсор.' },
+            { t: 'Разработка SPA', st: 'Студия EVS.PRO', i: '0', d: 'Создание современных web-решений. Топ-размещение.' },
+            { t: 'Барбершоп', st: 'Стрижка + Борода', i: '237', d: 'Лучшие мастера города ждут вас.' }
         ];
         const pWrap = document.getElementById('promo-wrap');
         promos.forEach(p => {
-            pWrap.innerHTML += `<div class="promo-card" onclick="openDetail('${p.t}', '${p.d}')"><img src="https://picsum.photos/id/${p.i}/600/200" class="promo-img"><div class="promo-content"><div class="promo-title">${p.t}</div><div class="promo-subtitle">${p.st}</div></div></div>`;
+            pWrap.innerHTML += `<div class="promo-card" onclick="openDetail('${p.t}', '', '${p.d}')"><img src="https://picsum.photos/id/${p.i}/600/200" class="promo-img"><div class="promo-content"><div class="promo-title">${p.t}</div><div class="promo-subtitle">${p.st}</div></div></div>`;
         });
-
         let pIndex = 0;
         setInterval(() => {
             pIndex = (pIndex + 1) % promos.length;
             pWrap.scrollTo({ left: pIndex * pWrap.clientWidth, behavior: 'smooth' });
-        }, 10000);
+        }, 8000);
+
+        const services = [
+            { t: 'Такси', i: svgs.car, d: 'Городские поездки. Подача 5 минут.' },
+            { t: 'Грузы', i: svgs.truck, d: 'Перевозка мебели, стройматериалов.' },
+            { t: 'Ремонт', i: svgs.tool, d: 'Сантехника, электрика, мелкий ремонт.' },
+            { t: 'Красота', i: svgs.scissors, d: 'Маникюр, стрижки на дому.' },
+            { t: 'Клининг', i: svgs.cleaning, d: 'Уборка квартир после ремонта.' },
+            { t: 'Бизнес', i: svgs.briefcase, d: 'Бухгалтерия, юридическая помощь.' },
+            { t: 'IT услуги', i: svgs.laptop, d: 'Настройка ПК, разработка, ремонт.' }
+        ];
+        const sWrap = document.getElementById('services-wrap');
+        services.forEach(s => {
+            sWrap.innerHTML += `<div class="service-box" onclick="openDetail('${s.t}', 'Договорная', '${s.d}')"><div class="glass service-icon-wrap">${drawSvg(s.i)}</div><div class="service-title">${s.t}</div></div>`;
+        });
+
+        const realty = [
+            { t: 'ЖК Аркадия, 1к', p: '$45 000', i: '104', d: 'Студия с видом на море. 45 кв.м. От хозяина.' },
+            { t: 'Дом у Фонтанки', p: '$120 000', i: '192', d: 'Новый коттедж, 150 кв.м, участок 6 соток.' },
+            { t: 'Офис Центр', p: '15 000 грн/мес', i: '175', d: 'Светлый офис 30 кв.м с генератором.' }
+        ];
+        const rWrap = document.getElementById('realty-wrap');
+        realty.forEach(r => {
+            rWrap.innerHTML += `<div class="glass vip-card" onclick="openDetail('${r.t}', '${r.p}', '${r.d}')"><img src="https://picsum.photos/id/${r.i}/300/200" class="vip-img"><div class="vip-body"><div class="vip-title">${r.t}</div><div class="vip-price">${r.p}</div></div></div>`;
+        });
+
+        const auto = [
+            { t: 'Toyota Camry 2018', p: '$18 500', i: '133', d: 'Идеальное состояние, один владелец. Газ/Бензин.' },
+            { t: 'BMW X5 2015', p: '$24 000', i: '183', d: 'Дизель 3.0, полная комплектация. Топ размещение.' },
+            { t: 'Honda Civic', p: '$8 500', i: '111', d: '2008 год, автомат, газовая установка.' }
+        ];
+        const aWrap = document.getElementById('auto-wrap');
+        auto.forEach(a => {
+            aWrap.innerHTML += `<div class="glass vip-card" onclick="openDetail('${a.t}', '${a.p}', '${a.d}')"><img src="https://picsum.photos/id/${a.i}/300/200" class="vip-img"><div class="vip-body"><div class="vip-title">${a.t}</div><div class="vip-price">${a.p}</div></div></div>`;
+        });
 
         const vacs = [
-            { t: 'JS Разработчик', p: '$1500 - 2500', m: 'Tech Corp', d: 'Удаленная работа, знание Vue/React, гибкий график.' },
-            { t: 'Водитель САТ', p: 'От 40 000 грн', m: 'Логистика', d: 'Развозка грузов по области, авто компании.' },
-            { t: 'Дизайнер UX/UI', p: '$1000', m: 'Студия', d: 'Проектирование мобильных и web-интерфейсов.' },
-            { t: 'Администратор', p: '25 000 грн', m: 'Отель Зирка', d: 'Встреча гостей, работа с CRM.' },
-            { t: 'Шеф-повар', p: '50 000 грн', m: 'Ресторан', d: 'Опыт работы от 3 лет.' },
-            { t: 'Менеджер продаж', p: 'Ставка + %', m: 'Торговля', d: 'Холодные и теплые звонки.' },
-            { t: 'Курьер на авто', p: 'Сдельная', m: 'Доставка', d: 'Доставка заказов интернет-магазина.' },
-            { t: 'Токарь', p: '35 000 грн', m: 'Завод', d: 'Работа на станках с ЧПУ.' },
-            { t: 'Бухгалтер', p: '$800', m: 'Офис', d: 'Ведение ФОП 3 группа.' },
-            { t: 'Копирайтер', p: 'Удаленно', m: 'Агентство', d: 'Написание текстов для сайтов и постов.' }
+            { t: 'Fullstack JS Dev', p: '$1500 - 2500', m: 'Удаленно', d: 'Знание Vue/React, Node.js, гибкий график.' },
+            { t: 'Водитель со своим авто', p: 'От 40 000 грн', m: 'Логистика', d: 'Развозка посылок.' },
+            { t: 'Менеджер продаж', p: 'Ставка + %', m: 'Офис', d: 'Теплые звонки, B2B.' }
         ];
         const vWrap = document.getElementById('vacancies-wrap');
         vacs.forEach(v => {
-            vWrap.innerHTML += `<div class="glass vacancy-card" onclick="openDetail('${v.t} (${v.p})', '${v.d}')"><div class="vac-title">${v.t}</div><div class="vac-price">${v.p}</div><div class="vac-meta">${v.m}</div></div>`;
+            vWrap.innerHTML += `<div class="glass vacancy-card" onclick="openDetail('${v.t}', '${v.p}', '${v.d} Компания: ${v.m}')"><div class="vac-title">${v.t}</div><div class="vac-price">${v.p}</div><div class="vac-meta">${v.m}</div></div>`;
         });
 
         const market = [
-            { t: 'MacBook Pro 14', p: '$1200', i: '20', d: 'Состояние идеальное, батарея 95%, коробка в наличии.' },
-            { t: 'Диван лофт', p: '12 000 грн', i: '21', d: 'Новый, стильный диван в гостиную.' },
-            { t: 'Honda Civic', p: '$8500', i: '111', d: '2008 год, автомат, газовая установка.' },
+            { t: 'MacBook Pro 14 M1', p: '$1200', i: '20', d: 'Батарея 95%, коробка. Продажа через Гаранта.' },
+            { t: 'Диван лофт', p: '12 000 грн', i: '21', d: 'Новый, стильный диван. Самовывоз.' },
             { t: 'Гитара Fender', p: '$400', i: '145', d: 'Акустическая гитара с чехлом.' },
-            { t: 'Велосипед', p: '6 000 грн', i: '146', d: 'Горный велосипед, колеса 29.' },
             { t: 'PS5 + 3 игры', p: '18 000 грн', i: '96', d: 'Ревизия CFI-1200, два геймпада.' },
-            { t: 'Шкаф купе', p: '4 500 грн', i: '42', d: 'Самовывоз, состояние хорошее.' },
             { t: 'iPhone 14 Pro', p: '$950', i: '1', d: 'Цвет черный космос, 128GB.' },
-            { t: 'Шины зима R17', p: '8 000 грн', i: '133', d: 'Без проколов, остаток протектор 7mm.' },
             { t: 'Кофемашина', p: '$300', i: '43', d: 'Капельная кофеварка с капучинатором.' }
         ];
         const mWrap = document.getElementById('market-wrap');
         market.forEach(m => {
-            mWrap.innerHTML += `<div class="glass market-card" onclick="openDetail('${m.t} — ${m.p}', '${m.d}')"><img src="https://picsum.photos/id/${m.i}/200/200" class="market-img"><div class="market-body"><div class="market-title">${m.t}</div><div class="market-price">${m.p}</div></div></div>`;
+            mWrap.innerHTML += `<div class="glass market-card" onclick="openDetail('${m.t}', '${m.p}', '${m.d}')"><img src="https://picsum.photos/id/${m.i}/200/200" class="market-img"><div class="market-body"><div class="market-title">${m.t}</div><div class="market-price">${m.p}</div></div></div>`;
         });
 
         const chats = [
-            { a: 'Олег', i: '15', m: 'Всем привет, кто сдавал отчет в налоговую, сервер лежит?' },
-            { a: 'Алина', i: '20', m: 'Да, с самого утра висит.' },
-            { a: 'Me', i: '11', m: 'Я вчера ночью успел отправить.', me: true },
-            { a: 'Макс', i: '32', m: 'Ребят, видел аварию на перекрестке, объезжайте.' },
-            { a: 'Катя', i: '43', m: 'Спасибо! Поеду через дворы.' }
+            { a: 'Олег', i: '15', m: 'Всем привет! Кто знает, работает ли сегодня Новая Почта на 5-й Фонтана?' },
+            { a: 'Алина', i: '20', m: 'Да, до 19:00 открыты.' },
+            { a: 'Me', i: '11', m: 'Спасибо, тоже нужно было забрать посылку.', me: true }
         ];
         const cWrap = document.getElementById('chat-wrap');
         chats.forEach(c => {
             cWrap.innerHTML += `<div class="msg-row ${c.me ? 'me' : ''}"><img src="https://i.pravatar.cc/100?img=${c.i}" class="msg-avatar"><div><div class="msg-author">${c.a}</div><div class="msg-body">${c.m}</div></div></div>`;
         });
 
-        // === MODAL DETAIL & FAVORITES ===
-        let currentItemTitle = "";
-        let currentItemDesc = "";
+        // === MODAL, CART & FAVORITES LOGIC ===
+        let currentItem = { title: "", price: "", desc: "" };
         const favs = [];
+        const cart = [];
 
-        function openDetail(title, desc) {
-            currentItemTitle = title;
-            currentItemDesc = desc;
+        function openDetail(title, price, desc) {
+            currentItem = { title, price, desc };
             document.getElementById('m-title').innerText = title;
+            document.getElementById('m-price').innerText = price;
             document.getElementById('m-desc').innerText = desc;
             document.getElementById('detail-modal').classList.add('active');
         }
@@ -536,9 +610,34 @@
         function closeModal(e) {
             if(e.target.id === 'detail-modal') closeDetailModal();
         }
+
+        function buyViaGarant() {
+            const feeTokens = 50;
+            const feePercent = "5%";
+            
+            let msg = `🛡️ БЕЗОПАСНАЯ СДЕЛКА\n\nВы покупаете: ${currentItem.title}\nСумма: ${currentItem.price}\n\n`;
+            msg += `Администратор выступит Гарантом сделки. Деньги будут заморожены до получения товара.\n\n`;
+            msg += `Выберите способ оплаты комиссии Гаранта:\n`;
+            msg += `[ОК] - Списать ${feeTokens} Суспільствокоїн (Баланс: ${tokenBalance})\n`;
+            msg += `[Отмена] - Оплатить деньгами (${feePercent} к сумме)`;
+            
+            if(confirm(msg)) {
+                if(tokenBalance >= feeTokens) {
+                    tokenBalance -= feeTokens;
+                    document.getElementById('token-balance').innerText = tokenBalance;
+                    alert("Сделка инициирована. Токены за комиссию списаны. Ожидайте сообщения от Администратора в чате.");
+                } else {
+                    alert("Недостаточно токенов для оплаты комиссии. Выполните задания в Кабинете.");
+                }
+            } else {
+                alert(`Сделка инициирована. Комиссия ${feePercent} будет включена в итоговый счет. Ожидайте Администратора.`);
+            }
+            closeDetailModal();
+        }
+
         function saveToFav() {
-            if(!favs.includes(currentItemTitle)) {
-                favs.push(currentItemTitle);
+            if(!favs.some(f => f.title === currentItem.title)) {
+                favs.push({...currentItem});
                 renderFavs();
                 alert('Добавлено в избранное!');
             }
@@ -547,23 +646,67 @@
         function renderFavs() {
             const fCont = document.getElementById('fav-container');
             if(favs.length === 0) {
-                fCont.innerHTML = '<div class="fav-empty">Здесь пока ничего нет.<br>Нажимайте на карточки, чтобы сохранить их.</div>';
+                fCont.innerHTML = '<div class="list-empty">Здесь пока ничего нет.<br>Сохраняйте карточки для быстрого доступа.</div>';
                 return;
             }
             fCont.innerHTML = '';
-            favs.forEach(f => {
-                fCont.innerHTML += `<div class="glass" style="padding:12px; margin-bottom:8px; font-size:13px; font-weight:500;">⭐ ${f}</div>`;
+            favs.forEach((f, idx) => {
+                fCont.innerHTML += `
+                    <div class="glass list-item">
+                        <div class="list-item-info">
+                            <span class="list-item-title">${f.title}</span>
+                            <span class="list-item-price">${f.price}</span>
+                        </div>
+                        <button class="btn-remove" onclick="removeFav(${idx})">&times;</button>
+                    </div>`;
             });
         }
+        function removeFav(idx) { favs.splice(idx, 1); renderFavs(); }
 
-        // Search simulation
-        function handleSearch(query) {
-            // Просто демонстрация фильтрации или вывода
-            if(query.length > 2) {
-                // Активный поиск может подсвечивать карточки
+        function addToCart() {
+            cart.push({...currentItem});
+            updateCartUI();
+            alert('Товар добавлен в корзину!');
+            closeDetailModal();
+        }
+        function updateCartUI() {
+            const cBadge = document.getElementById('cart-badge');
+            const cCont = document.getElementById('cart-container');
+            const cBtn = document.getElementById('cart-checkout-btn');
+            
+            if(cart.length > 0) {
+                cBadge.style.display = 'flex';
+                cBadge.innerText = cart.length;
+                cBtn.style.display = 'flex';
+                cCont.innerHTML = '';
+                cart.forEach((c, idx) => {
+                    cCont.innerHTML += `
+                        <div class="glass list-item">
+                            <div class="list-item-info">
+                                <span class="list-item-title">${c.title}</span>
+                                <span class="list-item-price">${c.price}</span>
+                            </div>
+                            <button class="btn-remove" onclick="removeCart(${idx})">&times;</button>
+                        </div>`;
+                });
+            } else {
+                cBadge.style.display = 'none';
+                cBtn.style.display = 'none';
+                cCont.innerHTML = '<div class="list-empty">Корзина пуста.<br>Добавляйте товары для безопасной сделки.</div>';
             }
+        }
+        function removeCart(idx) { cart.splice(idx, 1); updateCartUI(); }
+
+        function checkoutCart() {
+            if(cart.length === 0) return;
+            alert(`Переход к массовому оформлению сделки через Гаранта для ${cart.length} позиций.`);
+            cart.length = 0; // очищаем корзину после оформления
+            updateCartUI();
+        }
+
+        function handleSearch(query) {
+            // Заглушка фильтрации
         }
     </script>
 </body>
 </html>
-
