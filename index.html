@@ -3,414 +3,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Справочник Измаил</title>
+    <title>Community Premium</title>
     <style>
+        /* ================= PREMIUM STRICT GLASSMORPHISM ================= */
         :root {
-            /* Палитра новейшего Telegram (Night) */
-            --bg-black: #000000;
-            --bg-panel: #1c1c1e;
-            --glass-bg: rgba(28, 28, 30, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent: #0A84FF; /* iOS Blue */
-            --text-main: #ffffff;
-            --text-sub: #8e8e93;
-            --header-h: 56px;
-            --nav-h: 60px;
+            /* Строгая темная палитра без неона */
+            --bg-main: #0f1318; 
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-highlight: rgba(255, 255, 255, 0.1);
+            
+            --text-primary: #e6e9ec;
+            --text-secondary: #7e8b99;
+            --accent-strict: #5a7b9e; /* Спокойный, строгий сине-серый акцент */
+            
+            /* Ультракомпактные параметры */
+            --spacing: 8px; 
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: var(--bg-black);
-            color: var(--text-main);
-            padding-top: var(--header-h); 
-            padding-bottom: calc(var(--nav-h) + 10px);
-            font-size: 14px;
-            overflow-x: hidden;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            letter-spacing: -0.2px;
         }
 
-        /* Ультра-глассморфизм */
+        /* Glassmorphism Classes */
         .glass {
             background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* --- Шапка --- */
-        header {
-            position: fixed; top: 0; left: 0; right: 0;
-            height: var(--header-h);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 12px;
-            z-index: 1000;
+        /* SPA Layout */
+        #app {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 90px; /* Отступ под парящий бар */
+            scroll-behavior: smooth;
         }
-        .search-bar {
-            flex: 1; background: var(--bg-panel); border-radius: 10px; height: 36px;
-            display: flex; align-items: center; padding: 0 10px; gap: 8px; margin: 0 8px;
-        }
-        .search-bar input { background: transparent; border: none; color: #fff; width: 100%; outline: none; font-size: 15px; }
-        .search-bar input::placeholder { color: var(--text-sub); }
-        .header-icon { width: 28px; height: 28px; fill: var(--text-sub); }
-
-        /* --- Навигация --- */
-        nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            height: var(--nav-h);
-            border-top: 1px solid var(--glass-border);
-            display: flex; justify-content: space-around; align-items: center;
-            z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-sub); width: 100%; cursor: pointer; }
-        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
-        .nav-item span { font-size: 10px; font-weight: 500; }
-        .nav-item.active { color: var(--accent); }
-        .badge { position: absolute; background: #FF3B30; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 10px; top: -2px; right: 20px; border: 2px solid var(--glass-bg); }
-
-        /* --- Контейнер --- */
-        #app { padding: 4px; animation: fade 0.2s; }
-        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
-        /* --- Скролбары (Glovo Style) --- */
-        .h-scroll {
-            display: flex; gap: 8px; overflow-x: auto; padding: 8px 4px;
-            scroll-snap-type: x mandatory; scrollbar-width: none;
-        }
-        .h-scroll::-webkit-scrollbar { display: none; }
         
-        /* Мини-категории (Сториз) */
-        .story-bubble { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; scroll-snap-align: start; }
-        .story-img { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--accent); padding: 2px; background: var(--bg-black); object-fit: cover; }
-        .story-text { font-size: 11px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 100%; text-align: center; }
+        .view { display: none; padding: var(--spacing); animation: fade 0.25s ease-out; }
+        .view.active { display: block; }
+        @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Сетка категорий */
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; }
-        .cat-card { background: var(--bg-panel); border-radius: 10px; padding: 10px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-        .cat-card img { width: 40px; height: 40px; object-fit: contain; }
-        .cat-card span { font-size: 12px; font-weight: 500; }
+        /* Typography */
+        .section-header { 
+            font-size: 14px; 
+            font-weight: 500; 
+            color: var(--text-secondary);
+            margin: calc(var(--spacing) * 2) 0 var(--spacing) 4px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .header-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--glass-highlight); color: var(--text-primary); }
 
-        /* Лента Рекламы */
-        .ad-card { background: var(--bg-panel); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
-        .ad-img { width: 100%; height: 160px; object-fit: cover; }
-        .ad-info { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
-        .ad-price { color: var(--accent); font-weight: 600; font-size: 15px; }
-        
-        /* --- Чаты (Копия скриншота) --- */
-        .chat-tabs { display: flex; overflow-x: auto; gap: 8px; padding: 8px 12px; scrollbar-width: none; border-bottom: 1px solid var(--glass-border); }
-        .chat-tabs::-webkit-scrollbar { display: none; }
-        .chat-tab { background: transparent; color: var(--text-sub); font-size: 15px; white-space: nowrap; padding: 4px 8px; border-radius: 16px; font-weight: 500; }
-        .chat-tab.active { background: var(--glass-border); color: var(--text-main); }
-        
-        .chat-item { display: flex; align-items: center; gap: 10px; padding: 6px 12px; position: relative; }
-        .chat-item:active { background: var(--glass-border); }
-        .chat-item::after { content: ''; position: absolute; bottom: 0; left: 70px; right: 0; height: 1px; background: var(--glass-border); }
-        .chat-item:last-child::after { display: none; }
-        .chat-ava { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-        .chat-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; height: 48px; }
-        .chat-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
-        .chat-name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-time { font-size: 13px; color: var(--text-sub); flex-shrink: 0; margin-left: 8px; }
-        .chat-bottom { display: flex; justify-content: space-between; align-items: center; }
-        .chat-msg { font-size: 14px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pin-icon { width: 14px; height: 14px; fill: var(--text-sub); transform: rotate(45deg); }
+        /* Scrollable rows */
+        .scroll-x { 
+            display: flex; 
+            overflow-x: auto; 
+            gap: var(--spacing); 
+            padding-bottom: 4px; 
+            scroll-snap-type: x mandatory; 
+        }
+        .scroll-x::-webkit-scrollbar { display: none; }
+        .scroll-x > * { scroll-snap-align: start; flex-shrink: 0; }
 
-        /* Утилиты */
-        .section-title { font-size: 16px; font-weight: 600; padding: 8px 12px 4px; }
-        .btn { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; text-align: center; display: inline-block; width: 100%; }
+        /* ================= COMPONENTS ================= */
         
-        /* Профиль */
-        .profile-header { display: flex; flex-direction: column; align-items: center; padding: 20px 0 10px; gap: 8px; }
-        .profile-ava { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
-        .menu-list { background: var(--bg-panel); border-radius: 12px; margin: 8px; overflow: hidden; }
-        .menu-item { padding: 12px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
-        .menu-item:last-child { border: none; }
+        /* 1. Services */
+        .service-box { width: 56px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .service-icon-wrap { width: 56px; height: 56px; display: flex; justify-content: center; align-items: center; border-radius: var(--radius-md); color: var(--text-primary); transition: background 0.2s; }
+        .service-icon-wrap:active { background: var(--glass-highlight); }
+        .service-title { font-size: 10px; color: var(--text-secondary); text-align: center; white-space: nowrap; }
+
+        /* 2. Promos */
+        .promo-card { width: calc(100vw - 16px); height: 130px; border-radius: var(--radius-md); overflow: hidden; position: relative; }
+        .promo-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
+        .promo-content { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--spacing); background: linear-gradient(transparent, #000000e6); }
+        .promo-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+        .promo-subtitle { font-size: 11px; color: var(--text-secondary); }
+
+        /* 3. Vacancies */
+        .vacancy-card { width: 150px; padding: var(--spacing); display: flex; flex-direction: column; gap: 6px; }
+        .vac-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vac-price { font-size: 12px; color: var(--text-primary); }
+        .vac-meta { font-size: 10px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+
+        /* 4. Market */
+        .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing); }
+        .market-card { display: flex; flex-direction: column; overflow: hidden; }
+        .market-img { width: 100%; height: 110px; object-fit: cover; border-bottom: 1px solid var(--glass-border); }
+        .market-body { padding: var(--spacing); }
+        .market-title { font-size: 11px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .market-price { font-size: 12px; font-weight: 600; color: var(--accent-strict); }
+
+        /* 5. Chat Interface */
+        .chat-list { display: flex; flex-direction: column; gap: var(--spacing); padding-bottom: 60px; }
+        .msg-row { display: flex; gap: var(--spacing); max-width: 88%; }
+        .msg-row.me { align-self: flex-end; flex-direction: row-reverse; }
+        .msg-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .msg-body { padding: 8px 10px; font-size: 12px; line-height: 1.4; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; }
+        .msg-row.me .msg-body { background: var(--glass-highlight); border-bottom-right-radius: 4px; border-bottom-left-radius: var(--radius-md); }
+        .msg-author { font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 2px; }
+        .msg-row.me .msg-author { display: none; }
+        
+        .chat-input-wrapper { position: fixed; bottom: 85px; left: 8px; right: 8px; padding: 6px; display: flex; gap: 6px; z-index: 90; }
+        .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 12px; padding: 0 12px; outline: none; }
+        .chat-input::placeholder { color: var(--text-secondary); }
+        .chat-send-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--glass-highlight); border: none; border-radius: var(--radius-sm); color: var(--text-primary); }
+
+        /* 6. Cabinet */
+        .cab-header { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: var(--spacing); }
+        .cab-avatar { width: 56px; height: 56px; border-radius: var(--radius-sm); }
+        .cab-info h2 { font-size: 16px; font-weight: 500; }
+        .cab-info p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        
+        .cab-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing); margin-bottom: 16px; }
+        .stat-box { padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+        .stat-val { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; }
+
+        .btn-action { width: 100%; padding: 12px; margin-bottom: var(--spacing); display: flex; align-items: center; gap: 10px; background: transparent; border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 12px; font-weight: 500; text-align: left; }
+        .btn-action svg { color: var(--text-secondary); }
+        .btn-action .chevron { margin-left: auto; opacity: 0.5; }
+        
+        /* Floating Bottom Nav */
+        .floating-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            height: 56px;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            border-radius: var(--radius-lg);
+            z-index: 100;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); width: 33%; cursor: pointer; transition: color 0.2s; }
+        .nav-item svg { width: 20px; height: 20px; stroke-width: 1.5; }
+        .nav-label { font-size: 9px; font-weight: 500; letter-spacing: 0.2px; text-transform: uppercase; }
+        .nav-item.active { color: var(--text-primary); }
     </style>
 </head>
 <body>
 
-    <!-- Шапка со стеклом -->
-    <header class="glass">
-        <svg class="header-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-        <div class="search-bar">
-            <svg style="width:16px;height:16px;fill:#8e8e93" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input type="text" placeholder="Поиск услуг и контактов">
-        </div>
-        <img src="https://i.pravatar.cc/100?img=11" style="width:28px;height:28px;border-radius:50%;" alt="User">
-    </header>
+    <div id="app">
+        <!-- LOBBY -->
+        <div id="view-lobby" class="view active">
+            
+            <div class="section-header">Услуги <span class="header-tag">Каталог</span></div>
+            <div class="scroll-x" id="services-wrap"></div>
 
-    <!-- Главный контейнер для SPA -->
-    <main id="app"></main>
+            <div class="section-header">Реклама <span class="header-tag">Спонсоры</span></div>
+            <div class="scroll-x" id="promo-wrap" style="border-radius: var(--radius-md);"></div>
 
-    <!-- Нижний бар со стеклом -->
-    <nav class="glass">
-        <div class="nav-item active" onclick="navigate('home')">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            <span>Главная</span>
+            <div class="section-header">Вакансии <span class="header-tag">Работа</span></div>
+            <div class="scroll-x" id="vacancies-wrap"></div>
+
+            <div class="section-header">Маркет <span class="header-tag">Объявления</span></div>
+            <div class="market-grid" id="market-wrap"></div>
+
         </div>
-        <div class="nav-item" onclick="navigate('services')" style="position: relative;">
-            <svg viewBox="0 0 24 24"><path d="M7 19h10V4H7v15zm-5-2h4V6H2v11zM18 6v11h4V6h-4z"/></svg>
-            <span>Услуги</span>
+
+        <!-- CHAT -->
+        <div id="view-chat" class="view">
+            <div class="chat-list" id="chat-wrap"></div>
+            <div class="glass chat-input-wrapper">
+                <input type="text" class="chat-input" placeholder="Сообщение в общую группу...">
+                <button class="chat-send-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
         </div>
-        <div class="nav-item" onclick="navigate('chats')" style="position: relative;">
-            <div class="badge">4</div>
-            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
-            <span>Чаты</span>
+
+        <!-- CABINET -->
+        <div id="view-cabinet" class="view">
+            <div class="glass cab-header">
+                <img src="https://i.pravatar.cc/150?img=11" class="cab-avatar" alt="User">
+                <div class="cab-info">
+                    <h2>EVSpro</h2>
+                    <p>Web Architect & UI/UX</p>
+                </div>
+            </div>
+
+            <div class="cab-stats">
+                <div class="glass stat-box">
+                    <div class="stat-val">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strict)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                        1 450
+                    </div>
+                    <div class="stat-label">Суспільствокоїн</div>
+                </div>
+                <div class="glass stat-box">
+                    <div class="stat-val">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        5
+                    </div>
+                    <div class="stat-label">Активных постов</div>
+                </div>
+            </div>
+
+            <div class="section-header" style="margin-top: 24px;">Управление контентом</div>
+            
+            <button class="glass btn-action" onclick="alert('Открытие формы...')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Добавить услугу
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="glass btn-action">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                Запустить промо-постер
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="glass btn-action">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                Разместить вакансию
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="glass btn-action">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                Выставить вещь / авто
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
         </div>
-        <div class="nav-item" onclick="navigate('profile')">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            <span>EVSpro</span>
+    </div>
+
+    <!-- FLOATING NAV -->
+    <nav class="glass floating-nav">
+        <div class="nav-item active" onclick="switchTab('lobby', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span class="nav-label">Лобби</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('chat', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span class="nav-label">Группа</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('cabinet', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span class="nav-label">Кабинет</span>
         </div>
     </nav>
 
     <script>
-        // --- Демо-данные (Изображения с picsum / pravatar) ---
-        const views = {
-            
-            // 1. ГЛАВНАЯ (Стиль Glovo + Лента)
-            home: `
-                <div class="h-scroll">
-                    <div class="story-bubble"><img src="https://picsum.photos/100?random=1" class="story-img"><span class="story-text">Акции</span></div>
-                    <div class="story-bubble"><img src="https://picsum.photos/100?random=2" class="story-img"><span class="story-text">Топ мастера</span></div>
-                    <div class="story-bubble"><img src="https://picsum.photos/100?random=3" class="story-img"><span class="story-text">Срочно</span></div>
-                    <div class="story-bubble"><img src="https://picsum.photos/100?random=4" class="story-img"><span class="story-text">Новинки</span></div>
-                    <div class="story-bubble"><img src="https://picsum.photos/100?random=5" class="story-img"><span class="story-text">Авто</span></div>
-                    <div class="story-bubble"><img src="https://picsum.photos/100?random=6" class="story-img"><span class="story-text">Еда</span></div>
-                </div>
-
-                <div class="grid-3">
-                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">🚗</span><span>Автосервис</span></div>
-                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">🔧</span><span>Ремонт</span></div>
-                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">💅</span><span>Красота</span></div>
-                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">🍔</span><span>Доставка еды</span></div>
-                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">💻</span><span>IT & Веб</span></div>
-                    <div class="cat-card" onclick="navigate('category')"><span style="font-size:24px">📦</span><span>Грузчики</span></div>
-                </div>
-
-                <div class="section-title">Горячие предложения</div>
-                <div style="padding: 0 4px;">
-                    <div class="ad-card">
-                        <img src="https://picsum.photos/600/300?random=10" class="ad-img">
-                        <div class="ad-info">
-                            <div style="display:flex; justify-content:space-between;">
-                                <span style="font-size: 15px; font-weight:600;">Установка кондиционеров</span>
-                                <span class="ad-price">от 800 ₴</span>
-                            </div>
-                            <span style="font-size: 13px; color: var(--text-sub);">Быстрый выезд, гарантия на работу.</span>
-                        </div>
-                    </div>
-                    
-                    <div class="ad-card">
-                        <img src="https://picsum.photos/600/300?random=11" class="ad-img">
-                        <div class="ad-info">
-                            <div style="display:flex; justify-content:space-between;">
-                                <span style="font-size: 15px; font-weight:600;">Суши сет "Осака" (Скидка)</span>
-                                <span class="ad-price">450 ₴</span>
-                            </div>
-                            <span style="font-size: 13px; color: var(--text-sub);">Бесплатная доставка по городу.</span>
-                        </div>
-                    </div>
-                </div>
-            `,
-
-            // 2. ОТДЕЛЬНАЯ КАТЕГОРИЯ (Список услуг)
-            category: `
-                <div style="padding: 8px 12px; display:flex; gap: 8px; align-items:center;">
-                    <div onclick="navigate('home')" style="color:var(--accent); font-size:16px;">❮ Назад</div>
-                </div>
-                <div class="section-title" style="padding-top:0">Автосервис и СТО</div>
-                <div style="padding: 4px;">
-                    <div class="ad-card" style="display:flex; padding:8px; gap:10px; background: transparent; border-bottom: 1px solid var(--glass-border); border-radius: 0; margin:0;">
-                        <img src="https://picsum.photos/100/100?random=20" style="width:80px; height:80px; border-radius:8px; object-fit:cover;">
-                        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:4px;">
-                            <span style="font-weight:600; font-size:15px;">СТО "Измаил-Моторс"</span>
-                            <span style="font-size:13px; color:var(--text-sub);">Ходовая, замена масла.</span>
-                            <span class="ad-price">от 300 ₴</span>
-                        </div>
-                    </div>
-                    <div class="ad-card" style="display:flex; padding:8px; gap:10px; background: transparent; border-bottom: 1px solid var(--glass-border); border-radius: 0; margin:0;">
-                        <img src="https://picsum.photos/100/100?random=21" style="width:80px; height:80px; border-radius:8px; object-fit:cover;">
-                        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:4px;">
-                            <span style="font-weight:600; font-size:15px;">Автоэлектрик 24/7</span>
-                            <span style="font-size:13px; color:var(--text-sub);">Диагностика, сброс ошибок.</span>
-                            <span class="ad-price">от 500 ₴</span>
-                        </div>
-                    </div>
-                </div>
-            `,
-
-            // 3. ЧАТЫ (Имитация скриншота iOS Telegram)
-            chats: `
-                <div class="chat-tabs glass" style="position: sticky; top: var(--header-h); z-index: 99;">
-                    <div class="chat-tab active">Все</div>
-                    <div class="chat-tab">Клиенты</div>
-                    <div class="chat-tab">Группы <span class="badge" style="position:static; padding:1px 4px; margin-left:4px;">4</span></div>
-                    <div class="chat-tab">Работа</div>
-                </div>
-                
-                <div style="background: var(--bg-black); padding-bottom: 10px;">
-                    <!-- Чат 1 -->
-                    <div class="chat-item">
-                        <img src="https://picsum.photos/100?random=30" class="chat-ava">
-                        <div class="chat-content">
-                            <div class="chat-top">
-                                <span class="chat-name">FIXOMATua</span>
-                                <span class="chat-time">22.04</span>
-                            </div>
-                            <div class="chat-bottom">
-                                <span class="chat-msg">Виталий Системник Чистка Жиз)</span>
-                                <svg class="pin-icon" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h4.8v6h2.4v-6H18v-2l-2-2z"/></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Чат 2 -->
-                    <div class="chat-item">
-                        <img src="https://i.pravatar.cc/100?img=5" class="chat-ava">
-                        <div class="chat-content">
-                            <div class="chat-top">
-                                <span class="chat-name">Кицюнічка 🫶😻</span>
-                                <span class="chat-time">18.07</span>
-                            </div>
-                            <div class="chat-bottom">
-                                <span class="chat-msg">📞 Пропущенный звонок</span>
-                                <svg class="pin-icon" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h4.8v6h2.4v-6H18v-2l-2-2z"/></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Чат 3 -->
-                    <div class="chat-item">
-                        <img src="https://picsum.photos/100?random=31" class="chat-ava">
-                        <div class="chat-content">
-                            <div class="chat-top">
-                                <span class="chat-name">Мамуля</span>
-                                <span class="chat-time" style="color: var(--accent);">✓✓ 07:03</span>
-                            </div>
-                            <div class="chat-bottom">
-                                <span class="chat-msg">Реакция ❤️ на Ваше сообщение</span>
-                                <span style="font-size:12px; color:#ff3b30">❤️</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Чат 4 -->
-                    <div class="chat-item">
-                        <img src="https://picsum.photos/100?random=32" class="chat-ava">
-                        <div class="chat-content">
-                            <div class="chat-top">
-                                <span class="chat-name">Вовчик 🔇</span>
-                                <span class="chat-time" style="color: var(--accent);">✓✓ Вт</span>
-                            </div>
-                            <div class="chat-bottom">
-                                <span class="chat-msg">Реакция ❤️ на Ваше сообщение</span>
-                                <span style="font-size:12px; color:var(--text-sub)">🤍</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Чат 5 -->
-                    <div class="chat-item">
-                        <img src="https://picsum.photos/100?random=33" class="chat-ava">
-                        <div class="chat-content">
-                            <div class="chat-top">
-                                <span class="chat-name">IQ 100% 🔇</span>
-                                <span class="chat-time" style="color: var(--accent);">✓ 18:13</span>
-                            </div>
-                            <div class="chat-bottom">
-                                <span class="chat-msg">Вы: ▶ Решил немного руки потрени...</span>
-                                <svg class="pin-icon" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h4.8v6h2.4v-6H18v-2l-2-2z"/></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Чат 6 -->
-                    <div class="chat-item">
-                        <img src="https://picsum.photos/100?random=34" class="chat-ava">
-                        <div class="chat-content">
-                            <div class="chat-top">
-                                <span class="chat-name">Odessa veter | chat 🔇</span>
-                                <span class="chat-time">23:14</span>
-                            </div>
-                            <div class="chat-bottom">
-                                <span class="chat-msg">ЭРУС: Ваш 🐷 пэнис Має масу 5...</span>
-                                <div style="background:var(--bg-panel); border-radius:10px; padding: 2px 6px; font-size:11px; color:var(--text-sub)">3,1K</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `,
-
-            // 4. ПРОФИЛЬ EVSpro
-            profile: `
-                <div class="profile-header">
-                    <img src="https://i.pravatar.cc/150?img=11" class="profile-ava">
-                    <span style="font-size: 20px; font-weight: 600;">Евгений Сычов</span>
-                    <span style="font-size: 14px; color: var(--accent);">@EVSpro / EVSdev</span>
-                </div>
-                
-                <div class="menu-list">
-                    <div class="menu-item">
-                        <span style="font-size: 15px;">Мои услуги (Реклама)</span>
-                        <span style="color: var(--text-sub);">3 ❯</span>
-                    </div>
-                    <div class="menu-item">
-                        <span style="font-size: 15px;">Мои отклики (Работа)</span>
-                        <span style="color: var(--text-sub);">12 ❯</span>
-                    </div>
-                    <div class="menu-item">
-                        <span style="font-size: 15px;">Избранное</span>
-                        <span style="color: var(--text-sub);">❯</span>
-                    </div>
-                </div>
-
-                <div class="menu-list">
-                    <div class="menu-item">
-                        <span style="font-size: 15px; color: #FF3B30;">Выйти из аккаунта</span>
-                    </div>
-                </div>
-            `,
-
-            // 5. УСЛУГИ (Биржа)
-            services: `
-                <div class="section-title">Биржа задач (Ищу исполнителя)</div>
-                <div style="padding: 4px;">
-                    <div class="ad-card" style="padding: 12px; display:flex; flex-direction:column; gap:8px;">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <span style="font-weight:600; font-size:15px; width:70%;">Сделать Landing Page на JS (Без библиотек)</span>
-                            <span style="color:var(--accent); font-weight:600;">2000 ₴</span>
-                        </div>
-                        <span style="font-size:13px; color:var(--text-sub);">Нужен одностраничник для продажи свечей. Дизайн компактный, темная тема (glassmorphism). Оплата на карту после сдачи архива.</span>
-                        <button class="btn" style="margin-top:4px;">Откликнуться (EVSdev)</button>
-                    </div>
-
-                    <div class="ad-card" style="padding: 12px; display:flex; flex-direction:column; gap:8px;">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <span style="font-weight:600; font-size:15px; width:70%;">Починить бойлер (Центр)</span>
-                            <span style="color:var(--accent); font-weight:600;">500 ₴</span>
-                        </div>
-                        <span style="font-size:13px; color:var(--text-sub);">Капает снизу, воду перекрыли. Нужно сегодня до вечера.</span>
-                        <button class="btn" style="margin-top:4px;">Откликнуться</button>
-                    </div>
-                </div>
-            `
-        };
-
-        // Логика роутинга SPA
-        function navigate(view) {
-            document.getElementById('app').innerHTML = views[view];
-            
-            // Обновление активной кнопки в нижнем меню
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            const indexMap = { 'home': 0, 'services': 1, 'chats': 2, 'profile': 3 };
-            if (indexMap[view] !== undefined) {
-                document.querySelectorAll('.nav-item')[indexMap[view]].classList.add('active');
-            }
-            
-            window.scrollTo(0,0);
+        // === SPA ROUTING ===
+        function switchTab(viewId, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`view-${viewId}`).classList.add('active');
+            el.classList.add('active');
+            document.getElementById('app').scrollTo(0, 0);
         }
 
-        // Запуск приложения
-        navigate('home');
+        // === SVG GENERATOR (STRICT STYLE) ===
+        const svgs = {
+            car: '<rect x="3" y="8" width="18" height="4" rx="1"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/><path d="M4 8l2-4h12l2 4"/>',
+            truck: '<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+            tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+            scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
+            cleaning: '<path d="M12 2l3 7h-6z"/><path d="M12 9v13"/><line x1="8" y1="22" x2="16" y2="22"/>',
+            briefcase: '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+            book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+            laptop: '<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/>',
+            camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+            coffee: '<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'
+        };
+
+        const drawSvg = (path) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+
+        // === DATA INJECTION ===
+
+        // 1. SERVICES
+        const services = [
+            { t: 'Такси', i: svgs.car }, { t: 'Грузы', i: svgs.truck }, { t: 'Ремонт', i: svgs.tool },
+            { t: 'Красота', i: svgs.scissors }, { t: 'Клининг', i: svgs.cleaning }, { t: 'Бизнес', i: svgs.briefcase },
+            { t: 'Обучение', i: svgs.book }, { t: 'IT', i: svgs.laptop }, { t: 'Фото', i: svgs.camera }, { t: 'Еда', i: svgs.coffee }
+        ];
+        const sWrap = document.getElementById('services-wrap');
+        services.forEach(s => {
+            sWrap.innerHTML += `<div class="service-box"><div class="glass service-icon-wrap">${drawSvg(s.i)}</div><div class="service-title">${s.t}</div></div>`;
+        });
+
+        // 2. PROMOS
+        const promos = [
+            { t: 'Детейлинг Авто', st: 'Комплекс со скидкой', i: '111' }, { t: 'Доставка Пиццы', st: '24/7 по городу', i: '225' },
+            { t: 'Разработка Сайтов', st: 'Под ключ (SPA)', i: '0' }, { t: 'Ремонт Квартир', st: 'Смета за 1 час', i: '122' },
+            { t: 'Аренда Склада', st: 'От 10 до 500 кв.м.', i: '107' }, { t: 'Юридические услуги', st: 'Консультация', i: '155' },
+            { t: 'Барбершоп', st: 'Стрижка + Борода', i: '237' }, { t: 'Магазин Техники', st: 'Гарантия 2 года', i: '160' },
+            { t: 'Спортзал', st: 'Годовой абонемент', i: '272' }, { t: 'Доставка Цветов', st: 'Свежие розы', i: '112' }
+        ];
+        const pWrap = document.getElementById('promo-wrap');
+        promos.forEach(p => {
+            pWrap.innerHTML += `<div class="promo-card"><img src="https://picsum.photos/id/${p.i}/600/200" class="promo-img"><div class="promo-content"><div class="promo-title">${p.t}</div><div class="promo-subtitle">${p.st}</div></div></div>`;
+        });
+
+        // Promo Autoscroll
+        let pIndex = 0;
+        setInterval(() => {
+            pIndex = (pIndex + 1) % promos.length;
+            pWrap.scrollTo({ left: pIndex * pWrap.clientWidth, behavior: 'smooth' });
+        }, 10000);
+
+        // 3. VACANCIES
+        const vacs = [
+            { t: 'JS Разработчик', p: '$1500 - 2500', m: 'Tech Corp' }, { t: 'Водитель САТ', p: 'От 40 000 грн', m: 'Логистика' },
+            { t: 'Дизайнер UX/UI', p: '$1000', m: 'Студия' }, { t: 'Администратор', p: '25 000 грн', m: 'Отель Зирка' },
+            { t: 'Шеф-повар', p: '50 000 грн', m: 'Ресторан' }, { t: 'Менеджер продаж', p: 'Ставка + %', m: 'Торговля' },
+            { t: 'Курьер на авто', p: 'Сдельная', m: 'Доставка' }, { t: 'Токарь', p: '35 000 грн', m: 'Завод' },
+            { t: 'Бухгалтер', p: '$800', m: 'Офис' }, { t: 'Копирайтер', p: 'Удаленно', m: 'Агентство' }
+        ];
+        const vWrap = document.getElementById('vacancies-wrap');
+        vacs.forEach(v => {
+            vWrap.innerHTML += `<div class="glass vacancy-card"><div class="vac-title">${v.t}</div><div class="vac-price">${v.p}</div><div class="vac-meta"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>${v.m}</div></div>`;
+        });
+
+        // 4. MARKET
+        const market = [
+            { t: 'MacBook Pro 14', p: '$1200', i: '20' }, { t: 'Диван лофт', p: '12 000 грн', i: '21' },
+            { t: 'Honda Civic', p: '$8500', i: '111' }, { t: 'Гитара Fender', p: '$400', i: '145' },
+            { t: 'Велосипед', p: '6 000 грн', i: '146' }, { t: 'PS5 + 3 игры', p: '18 000 грн', i: '96' },
+            { t: 'Шкаф купе', p: '4 500 грн', i: '42' }, { t: 'iPhone 14 Pro', p: '$950', i: '1' },
+            { t: 'Шины зима R17', p: '8 000 грн', i: '133' }, { t: 'Кофемашина', p: '$300', i: '43' }
+        ];
+        const mWrap = document.getElementById('market-wrap');
+        market.forEach(m => {
+            mWrap.innerHTML += `<div class="glass market-card"><img src="https://picsum.photos/id/${m.i}/200/200" class="market-img"><div class="market-body"><div class="market-title">${m.t}</div><div class="market-price">${m.p}</div></div></div>`;
+        });
+
+        // 5. CHAT
+        const chats = [
+            { a: 'Олег', i: '15', m: 'Всем привет, кто сдавал отчет в налоговую, сервер лежит?' },
+            { a: 'Алина', i: '20', m: 'Да, с самого утра висит.' },
+            { a: 'Me', i: '11', m: 'Я вчера ночью успел отправить.', me: true },
+            { a: 'Макс', i: '32', m: 'Ребят, видел аварию на перекрестке, объезжайте.' },
+            { a: 'Катя', i: '43', m: 'Спасибо! Поеду через дворы.' },
+            { a: 'Влад', i: '54', m: 'Кому нужны услуги грузчиков? В разделе рекламы висит мой баннер.' },
+            { a: 'Me', i: '11', m: 'Сколько за час берете?', me: true },
+            { a: 'Влад', i: '54', m: 'В лс ответил.' },
+            { a: 'Ира', i: '65', m: 'Продаю коляску, почти новая, смотрите в маркете!' },
+            { a: 'Дима', i: '76', m: 'Кто знает телефон электрика нормального?' }
+        ];
+        const cWrap = document.getElementById('chat-wrap');
+        chats.forEach(c => {
+            cWrap.innerHTML += `<div class="msg-row ${c.me ? 'me' : ''}"><img src="https://i.pravatar.cc/100?img=${c.i}" class="msg-avatar"><div><div class="msg-author">${c.a}</div><div class="msg-body">${c.m}</div></div></div>`;
+        });
+        
+        // Chat auto-scroll on view active
+        const ob = new MutationObserver(() => {
+            if (document.getElementById('view-chat').classList.contains('active')) {
+                document.getElementById('app').scrollTo(0, document.getElementById('app').scrollHeight);
+            }
+        });
+        ob.observe(document.getElementById('view-chat'), { attributes: true });
+
     </script>
 </body>
 </html>
