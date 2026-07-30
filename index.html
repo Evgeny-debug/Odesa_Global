@@ -14,7 +14,8 @@
             --text-primary: #e6e9ec;
             --text-secondary: #7e8b99;
             --accent: #5a7b9e;
-            --accent-gold: #c5a861; /* Muted gold for premium/tokens, NO NEON */
+            --accent-gold: #c5a861;
+            --danger: #e25c5c;
             --spacing: 8px;
             --radius-sm: 8px;
             --radius-md: 14px;
@@ -49,26 +50,27 @@
             top: 12px;
             left: 12px;
             right: 12px;
-            height: 48px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 12px;
-            z-index: 100;
+            z-index: 90;
             border-radius: var(--radius-lg);
         }
-        .location-badge {
+        .header-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--text-primary);
-            background: var(--glass-highlight);
-            padding: 4px 8px;
-            border-radius: 20px;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
+            position: relative;
         }
+        
         .search-bar-wrap {
             flex: 1;
             margin: 0 10px;
@@ -78,25 +80,18 @@
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 0 10px;
-            height: 32px;
+            height: 34px;
         }
-        .search-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 11px;
-            outline: none;
-            padding-left: 6px;
-        }
+        .search-input { width: 100%; background: transparent; border: none; color: var(--text-primary); font-size: 12px; outline: none; padding-left: 6px; }
         .search-input::placeholder { color: var(--text-secondary); }
+        .cart-badge { position: absolute; top: -2px; right: -2px; background: var(--accent); color: #fff; font-size: 9px; width: 16px; height: 16px; display: none; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; }
 
         /* SPA App Container */
         #app {
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding-top: 70px;
+            padding-top: 76px;
             padding-bottom: 90px;
             scroll-behavior: smooth;
         }
@@ -104,241 +99,186 @@
         .view.active { display: block; }
         @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Typography & Headers */
-        .section-header { 
-            font-size: 12px; 
-            font-weight: 500; 
-            color: var(--text-secondary);
-            margin: calc(var(--spacing) * 2) 0 var(--spacing) 4px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .header-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--glass-highlight); color: var(--text-primary); }
-        .header-tag.premium { color: var(--accent-gold); border: 1px solid rgba(197, 168, 97, 0.3); }
+        /* Typography & Layouts */
+        .section-header { font-size: 13px; font-weight: 600; color: var(--text-primary); margin: 24px 0 12px 4px; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.3px; }
+        .header-tag { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: var(--glass-highlight); color: var(--text-secondary); font-weight: 500; }
+        .header-tag.premium { color: var(--accent-gold); border: 1px solid rgba(197, 168, 97, 0.3); background: rgba(197, 168, 97, 0.05); }
 
-        .scroll-x { 
-            display: flex; 
-            overflow-x: auto; 
-            gap: var(--spacing); 
-            padding-bottom: 4px; 
-            scroll-snap-type: x mandatory; 
-        }
+        .scroll-x { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 8px; scroll-snap-type: x mandatory; margin-left: -4px; padding-left: 4px; }
         .scroll-x::-webkit-scrollbar { display: none; }
         .scroll-x > * { scroll-snap-align: start; flex-shrink: 0; }
 
         /* Components */
-        .service-box { width: 56px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-        .service-icon-wrap { width: 56px; height: 56px; display: flex; justify-content: center; align-items: center; border-radius: var(--radius-md); color: var(--text-primary); }
-        .service-title { font-size: 10px; color: var(--text-secondary); text-align: center; white-space: nowrap; }
+        .promo-card { width: calc(100vw - 32px); height: 140px; border-radius: var(--radius-md); overflow: hidden; position: relative; cursor: pointer; }
+        .promo-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
+        .promo-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px; background: linear-gradient(transparent, #000000f0); }
+        .promo-title { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+        .promo-subtitle { font-size: 12px; color: var(--accent-gold); }
 
-        .promo-card { width: calc(100vw - 16px); height: 130px; border-radius: var(--radius-md); overflow: hidden; position: relative; cursor: pointer; }
-        .promo-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
-        .promo-content { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--spacing); background: linear-gradient(transparent, #000000e6); }
-        .promo-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
-        .promo-subtitle { font-size: 11px; color: var(--text-secondary); }
+        .service-box { width: 64px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .service-icon-wrap { width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; border-radius: 16px; color: var(--text-primary); transition: background 0.2s; }
+        .service-icon-wrap:active { background: var(--glass-highlight); }
+        .service-title { font-size: 11px; color: var(--text-secondary); text-align: center; white-space: nowrap; font-weight: 500; }
 
-        .vip-card { width: 220px; border-radius: var(--radius-md); overflow: hidden; cursor: pointer; border: 1px solid rgba(197, 168, 97, 0.15); }
-        .vip-img { width: 100%; height: 120px; object-fit: cover; }
-        .vip-body { padding: var(--spacing); background: var(--glass-bg); }
-        .vip-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .vip-price { font-size: 13px; font-weight: 600; color: var(--accent-gold); margin-top: 2px; }
-
-        .vacancy-card { width: 150px; padding: var(--spacing); display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
-        .vac-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .vac-price { font-size: 12px; color: var(--text-primary); }
-        .vac-meta { font-size: 10px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
-
-        .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing); }
-        .market-card { display: flex; flex-direction: column; overflow: hidden; cursor: pointer; }
-        .market-img { width: 100%; height: 110px; object-fit: cover; border-bottom: 1px solid var(--glass-border); }
-        .market-body { padding: var(--spacing); }
-        .market-title { font-size: 11px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .market-price { font-size: 12px; font-weight: 600; color: var(--accent); }
+        /* Product Cards with Actions */
+        .product-card { width: 220px; border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative; display: flex; flex-direction: column; }
+        .market-card { width: 100%; }
+        .product-img-wrap { position: relative; width: 100%; height: 130px; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-actions { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; }
+        .action-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2); color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; transition: transform 0.1s; }
+        .action-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
+        
+        .product-body { padding: 10px; background: var(--glass-bg); flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+        .product-price { font-size: 14px; font-weight: 600; color: var(--accent-gold); }
+        
+        .market-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
         /* Chat */
-        .chat-list { display: flex; flex-direction: column; gap: var(--spacing); padding-bottom: 60px; }
-        .msg-row { display: flex; gap: var(--spacing); max-width: 88%; }
+        .chat-list { display: flex; flex-direction: column; gap: 12px; padding-bottom: 60px; }
+        .msg-row { display: flex; gap: 10px; max-width: 90%; }
         .msg-row.me { align-self: flex-end; flex-direction: row-reverse; }
-        .msg-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-        .msg-body { padding: 8px 10px; font-size: 12px; line-height: 1.4; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; }
-        .msg-row.me .msg-body { background: var(--glass-highlight); border-bottom-right-radius: 4px; border-bottom-left-radius: var(--radius-md); }
-        .msg-author { font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 2px; }
+        .msg-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .msg-body { padding: 10px 12px; font-size: 13px; line-height: 1.4; border-radius: 16px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; }
+        .msg-row.me .msg-body { background: var(--glass-highlight); border: 1px solid rgba(255,255,255,0.1); border-bottom-right-radius: 4px; border-bottom-left-radius: 16px; }
+        .msg-author { font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; margin-left: 2px;}
         .msg-row.me .msg-author { display: none; }
         
-        .chat-input-wrapper { position: fixed; bottom: 85px; left: 8px; right: 8px; padding: 6px; display: flex; gap: 6px; z-index: 90; }
-        .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 12px; padding: 0 12px; outline: none; }
-        .chat-send-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--glass-highlight); border: none; border-radius: var(--radius-sm); color: var(--text-primary); cursor: pointer; }
+        .chat-input-wrapper { position: fixed; bottom: 85px; left: 12px; right: 12px; padding: 6px; display: flex; gap: 8px; z-index: 80; border-radius: 24px; }
+        .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 13px; padding: 0 16px; outline: none; }
+        .chat-send-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--accent); border: none; border-radius: 50%; color: #fff; cursor: pointer; }
 
-        /* Cabinet & Lists */
-        .cab-header { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: var(--spacing); }
-        .cab-avatar { width: 56px; height: 56px; border-radius: var(--radius-sm); }
-        .cab-info h2 { font-size: 16px; font-weight: 500; letter-spacing: 0.5px; }
-        .cab-info p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        /* Cabinet */
+        .cab-header { display: flex; align-items: center; gap: 16px; padding: 16px; margin-bottom: 16px; }
+        .cab-avatar { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; border: 1px solid var(--glass-border); }
+        .cab-info h2 { font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+        .cab-info p { font-size: 12px; color: var(--text-secondary); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
         
-        .cab-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing); margin-bottom: 16px; }
-        .stat-box { padding: 12px; display: flex; flex-direction: column; gap: 4px; }
-        .stat-val { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; }
-        
-        /* Tokens Box */
-        .token-box { grid-column: span 2; border-color: rgba(197, 168, 97, 0.2); background: rgba(197, 168, 97, 0.03); display: flex; flex-direction: row; justify-content: space-between; align-items: center;}
-        .btn-earn { font-size: 10px; background: rgba(197, 168, 97, 0.15); color: var(--accent-gold); border: 1px solid rgba(197, 168, 97, 0.3); padding: 6px 12px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+        .cab-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .stat-box { padding: 14px; display: flex; flex-direction: column; gap: 6px; border-radius: 16px; }
+        .stat-val { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .token-box { grid-column: span 2; border-color: rgba(197, 168, 97, 0.2); background: linear-gradient(135deg, rgba(197, 168, 97, 0.05), transparent); flex-direction: row; justify-content: space-between; align-items: center;}
+        .btn-earn { font-size: 11px; background: rgba(197, 168, 97, 0.15); color: var(--accent-gold); border: 1px solid rgba(197, 168, 97, 0.3); padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; }
 
-        .btn-action { width: 100%; padding: 12px; margin-bottom: var(--spacing); display: flex; align-items: center; gap: 10px; background: transparent; border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 12px; font-weight: 500; text-align: left; cursor: pointer; }
+        .btn-action { width: 100%; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; color: var(--text-primary); font-size: 13px; font-weight: 500; text-align: left; cursor: pointer; }
         .btn-action svg { color: var(--text-secondary); }
-        .btn-action .chevron { margin-left: auto; opacity: 0.5; }
-        .btn-garant { background: rgba(90, 123, 158, 0.2); border-color: var(--accent); color: var(--text-primary); justify-content: center; font-weight: 600; }
+        .btn-action .chevron { margin-left: auto; opacity: 0.4; }
+        .btn-garant { background: rgba(90, 123, 158, 0.15); border-color: rgba(90, 123, 158, 0.4); color: #fff; justify-content: center; font-weight: 600; }
+
+        /* Floating Bottom Nav (Reduced to 3 core tabs) */
+        .floating-nav { position: fixed; bottom: 16px; left: 16px; right: 16px; height: 60px; display: flex; justify-content: space-around; align-items: center; border-radius: var(--radius-lg); z-index: 90; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-secondary); cursor: pointer; transition: color 0.2s; width: 33%; }
+        .nav-item svg { width: 22px; height: 22px; stroke-width: 1.8; }
+        .nav-label { font-size: 10px; font-weight: 500; }
+        .nav-item.active { color: var(--text-primary); }
+
+        /* DRAWERS (Slide-out panels) */
+        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .drawer-overlay.active { opacity: 1; pointer-events: auto; }
+        .drawer { position: fixed; top: 0; bottom: 0; width: 85%; max-width: 360px; background: var(--bg-main); z-index: 101; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .drawer.left { left: 0; transform: translateX(-100%); border-right: 1px solid var(--glass-border); }
+        .drawer.right { right: 0; transform: translateX(100%); border-left: 1px solid var(--glass-border); }
+        .drawer.open { transform: translateX(0); }
+        
+        .drawer-header { padding: 20px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); }
+        .drawer-title { font-size: 16px; font-weight: 600; }
+        .drawer-content { padding: 16px; flex: 1; overflow-y: auto; }
+        .close-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; display: flex; }
+
+        /* Menu Items */
+        .menu-link { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--glass-border); color: var(--text-primary); font-size: 14px; text-decoration: none; }
+        .menu-link svg { color: var(--accent); }
 
         /* Lists (Cart/Fav) */
-        .list-empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 12px; line-height: 1.5;}
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: var(--spacing); }
-        .list-item-info { display: flex; flex-direction: column; gap: 4px; }
-        .list-item-title { font-size: 12px; font-weight: 500; }
-        .list-item-price { font-size: 13px; font-weight: 600; color: var(--accent); }
-        .btn-remove { background: transparent; border: none; color: #ff5e5e; font-size: 18px; cursor: pointer; opacity: 0.7; }
+        .list-empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 13px; line-height: 1.5; }
+        .list-item { display: flex; gap: 12px; padding: 12px; margin-bottom: 10px; align-items: center; }
+        .list-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .list-item-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .list-item-title { font-size: 13px; font-weight: 500; }
+        .list-item-price { font-size: 14px; font-weight: 600; color: var(--accent-gold); }
+        .btn-remove { background: transparent; border: none; color: var(--danger); font-size: 20px; cursor: pointer; padding: 4px; opacity: 0.8; }
 
-        /* Floating Nav */
-        .floating-nav {
-            position: fixed;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            height: 56px;
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-            border-radius: var(--radius-lg);
-            z-index: 100;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); width: 20%; cursor: pointer; transition: color 0.2s; }
-        .nav-item svg { width: 18px; height: 18px; stroke-width: 1.5; }
-        .nav-label { font-size: 9px; font-weight: 500; text-transform: uppercase; }
-        .nav-item.active { color: var(--text-primary); }
-        .cart-badge { position: absolute; top: 6px; right: 22%; background: var(--accent); color: #fff; font-size: 8px; width: 14px; height: 14px; display: none; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; }
-
-        /* Modal Overlay */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(12px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-card {
-            width: 100%;
-            max-width: 360px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            animation: zoomIn 0.2s ease-out;
-        }
-        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
-        .modal-price { font-size: 18px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
-        .modal-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px; }
+        /* PRODUCT DETAIL PAGE (SPA Overlay) */
+        .page-view { position: fixed; inset: 0; background: var(--bg-main); z-index: 150; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; overflow-y: auto; }
+        .page-view.active { transform: translateX(0); }
+        .page-header { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; z-index: 2; }
+        .page-nav-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(11, 15, 20, 0.7); backdrop-filter: blur(8px); border: 1px solid var(--glass-border); display: flex; justify-content: center; align-items: center; color: #fff; cursor: pointer; }
+        .detail-img { width: 100%; height: 350px; object-fit: cover; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
+        .detail-content { padding: 24px 16px; flex: 1; }
+        .detail-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+        .detail-price { font-size: 24px; font-weight: 700; color: var(--accent-gold); margin-bottom: 16px; }
+        .detail-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
         
-        .modal-btn { width: 100%; padding: 12px; background: var(--glass-highlight); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .modal-btn.primary { background: rgba(90, 123, 158, 0.2); border-color: var(--accent); }
-        .modal-btn-group { display: flex; gap: var(--spacing); }
-        .modal-btn-group .modal-btn { flex: 1; }
+        .detail-actions { position: sticky; bottom: 0; padding: 16px; background: var(--bg-main); border-top: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 12px; }
+        .btn-primary { width: 100%; padding: 14px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; }
         
-        .onboarding-select {
-            width: 100%;
-            background: var(--bg-main);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            padding: 10px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            outline: none;
-            margin-top: 8px;
-        }
+        /* Onboarding */
+        .modal-card { width: 100%; max-width: 360px; padding: 24px; display: flex; flex-direction: column; gap: 12px; margin: auto; z-index: 200; position: relative;}
+        .onboarding-select { width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 12px; border-radius: 12px; font-size: 14px; outline: none; margin-top: 8px; }
+        .onboarding-select option, .onboarding-select optgroup { background: var(--bg-main); color: var(--text-primary); }
     </style>
 </head>
 <body>
 
     <!-- FLOATING HEADER -->
     <header class="glass floating-header">
-        <div class="location-badge" onclick="openLocationModal()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <span id="current-location-label">Одесса (Город)</span>
-        </div>
+        <button class="header-btn" onclick="openDrawer('menu-drawer')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
         <div class="search-bar-wrap">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" class="search-input" placeholder="Поиск услуг, товаров..." oninput="handleSearch(this.value)">
         </div>
+        <button class="header-btn" onclick="openDrawer('cart-drawer')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <div class="cart-badge" id="cart-badge-top">0</div>
+        </button>
     </header>
 
     <div id="app">
-        <!-- LOBBY -->
-        <div id="view-lobby" class="view active">
+        <!-- ГЛАВНАЯ (Бывшее Лобби) -->
+        <div id="view-main" class="view active">
             
-            <div class="section-header">Рекламные баннеры <span class="header-tag premium">Платный Топ</span></div>
-            <div class="scroll-x" id="promo-wrap" style="border-radius: var(--radius-md);"></div>
+            <div class="section-header">Промо-постеры <span class="header-tag premium">VIP Топ</span></div>
+            <div class="scroll-x" id="promo-wrap"></div>
 
-            <div class="section-header">Категории услуг <span class="header-tag">Каталог</span></div>
+            <div class="section-header">Каталог услуг <span class="header-tag">Категории</span></div>
             <div class="scroll-x" id="services-wrap"></div>
 
-            <div class="section-header">Недвижимость <span class="header-tag premium">VIP Топ</span></div>
+            <div class="section-header">Недвижимость <span class="header-tag premium">Проверено</span></div>
             <div class="scroll-x" id="realty-wrap"></div>
 
-            <div class="section-header">Автомобили <span class="header-tag premium">VIP Топ</span></div>
+            <div class="section-header">Автомобили <span class="header-tag">Авторынок</span></div>
             <div class="scroll-x" id="auto-wrap"></div>
 
-            <div class="section-header">Вакансии и подработка <span class="header-tag">Работа</span></div>
-            <div class="scroll-x" id="vacancies-wrap"></div>
-
-            <div class="section-header">Барахолка и маркет <span class="header-tag">Бесплатно</span></div>
+            <div class="section-header">Барахолка и маркет <span class="header-tag">От пользователей</span></div>
             <div class="market-grid" id="market-wrap"></div>
         </div>
 
-        <!-- CHAT -->
+        <!-- ЧАТ -->
         <div id="view-chat" class="view">
-            <div class="section-header" style="margin-top:0;">Общий чат сообщества</div>
+            <div class="section-header" style="margin-top:0;">Общий чат комьюнити</div>
             <div class="chat-list" id="chat-wrap"></div>
             <div class="glass chat-input-wrapper">
-                <input type="text" class="chat-input" placeholder="Сообщение в общую группу...">
+                <input type="text" class="chat-input" placeholder="Написать в группу...">
                 <button class="chat-send-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </div>
         </div>
 
-        <!-- CART -->
-        <div id="view-cart" class="view">
-            <div class="section-header" style="margin-top:0;">Корзина покупок</div>
-            <div id="cart-container">
-                <div class="list-empty">Корзина пуста.<br>Добавляйте товары для безопасной сделки.</div>
-            </div>
-            <button class="glass btn-action btn-garant" id="cart-checkout-btn" style="display:none; margin-top:16px;" onclick="checkoutCart()">
-                🛡️ Оформить через Гаранта
-            </button>
-        </div>
-
-        <!-- FAVORITES -->
-        <div id="view-fav" class="view">
-            <div class="section-header" style="margin-top:0;">Избранное</div>
-            <div id="fav-container">
-                <div class="list-empty">Здесь пока ничего нет.<br>Сохраняйте карточки для быстрого доступа.</div>
-            </div>
-        </div>
-
-        <!-- CABINET -->
+        <!-- КАБИНЕТ -->
         <div id="view-cabinet" class="view">
             <div class="glass cab-header">
-                <img src="https://i.pravatar.cc/150?img=11" class="cab-avatar" alt="User">
+                <img src="https://i.pravatar.cc/150?img=11" class="cab-avatar" alt="Avatar">
                 <div class="cab-info">
                     <h2>EVS.PRO</h2>
-                    <p id="cab-loc-text">Локация: Одесса (Город)</p>
+                    <p id="cab-loc-text">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        Одесса (Город)
+                    </p>
                 </div>
             </div>
 
@@ -346,67 +286,56 @@
                 <div class="glass stat-box token-box">
                     <div>
                         <div class="stat-val" style="color: var(--accent-gold);">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
                             <span id="token-balance">1 450</span>
                         </div>
                         <div class="stat-label">Суспільствокоїн</div>
                     </div>
-                    <button class="btn-earn" onclick="earnTokens()">💰 Заработать</button>
+                    <button class="btn-earn" onclick="earnTokens()">💰 Пополнить</button>
                 </div>
                 <div class="glass stat-box">
                     <div class="stat-val">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                         5
                     </div>
-                    <div class="stat-label">Активных постов</div>
+                    <div class="stat-label">Мои посты</div>
                 </div>
                 <div class="glass stat-box">
                     <div class="stat-val">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                         12
                     </div>
-                    <div class="stat-label">Успешных сделок</div>
+                    <div class="stat-label">Сделки</div>
                 </div>
             </div>
-
-            <div class="section-header" style="margin-top: 24px;">Управление</div>
             
-            <button class="glass btn-action" onclick="openLocationModal()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path></svg>
-                🔄 Переезжаю (Сменить локацию)
+            <button class="btn-action" onclick="document.getElementById('location-modal').classList.add('active')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path></svg>
+                Сменить локацию
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
-            <button class="glass btn-action" onclick="alert('Выбор категории для бесплатного размещения')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Добавить бесплатное объявление
+            <button class="btn-action" onclick="alert('Открытие формы добавления лота')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Разместить объявление
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
-            <button class="glass btn-action" style="border-color: rgba(197, 168, 97, 0.3);" onclick="alert('Оплата размещения баннера в VIP-топе. Списание баланса.')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                <span style="color: var(--accent-gold);">Купить VIP / Промо-постер</span>
+            <button class="btn-action" style="border-color: rgba(197, 168, 97, 0.3);" onclick="alert('Доступ к рекламному кабинету')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span style="color: var(--accent-gold);">Купить PRO-размещение</span>
                 <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
         </div>
     </div>
 
-    <!-- FLOATING NAV -->
+    <!-- FLOATING BOTTOM NAV (Core Tabs) -->
     <nav class="glass floating-nav">
-        <div class="nav-item active" onclick="switchTab('lobby', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
-            <span class="nav-label">Лобби</span>
+        <div class="nav-item active" onclick="switchTab('main', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span class="nav-label">Главная</span>
         </div>
         <div class="nav-item" onclick="switchTab('chat', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             <span class="nav-label">Чат</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('cart', this)" style="position:relative;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-            <span class="nav-label">Корзина</span>
-            <div class="cart-badge" id="cart-badge">0</div>
-        </div>
-        <div class="nav-item" onclick="switchTab('fav', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-            <span class="nav-label">Избранное</span>
         </div>
         <div class="nav-item" onclick="switchTab('cabinet', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -414,49 +343,100 @@
         </div>
     </nav>
 
-    <!-- DETAIL MODAL -->
-    <div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
-        <div class="glass modal-card" onclick="event.stopPropagation()">
-            <div class="modal-title" id="m-title">Название</div>
-            <div class="modal-price" id="m-price"></div>
-            <div class="modal-desc" id="m-desc">Описание позиции, контакты и условия предоставления.</div>
-            
-            <button class="modal-btn primary" style="margin-bottom: var(--spacing);" onclick="buyViaGarant()">
-                🛡️ Безопасная сделка (Админ-Гарант)
-            </button>
-            
-            <div class="modal-btn-group">
-                <button class="modal-btn" onclick="addToCart()">🛒 В корзину</button>
-                <button class="modal-btn" onclick="saveToFav()">⭐ В избранное</button>
-            </div>
-            <button class="modal-btn" style="margin-top: var(--spacing); background: transparent; border-color: transparent;" onclick="closeDetailModal()">Закрыть</button>
+    <!-- OVERLAY FOR DRAWERS -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawers()"></div>
+
+    <!-- LEFT DRAWER (MAIN MENU) -->
+    <div class="drawer left" id="menu-drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">Меню</span>
+            <button class="close-btn" onclick="closeDrawers()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+        <div class="drawer-content">
+            <a href="#" class="menu-link" onclick="closeDrawers(); switchTab('main', document.querySelectorAll('.nav-item')[0])">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Каталог
+            </a>
+            <a href="#" class="menu-link" onclick="closeDrawers(); openDrawer('fav-drawer')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                Избранное
+            </a>
+            <a href="#" class="menu-link" onclick="closeDrawers(); alert('Открытие настроек приложения')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Настройки
+            </a>
+            <a href="#" class="menu-link" style="color: var(--danger);" onclick="closeDrawers(); alert('Выход')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Выйти
+            </a>
         </div>
     </div>
 
-    <!-- LOCATION ONBOARDING / CHANGE MODAL -->
-    <div class="modal-overlay active" id="location-modal">
-        <div class="glass modal-card">
-            <div class="modal-title">Выберите вашу локацию</div>
-            <div class="modal-desc">От этого зависит лента контента, чат сообщества и локальные услуги.</div>
+    <!-- RIGHT DRAWER (CART) -->
+    <div class="drawer right" id="cart-drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">Корзина</span>
+            <button class="close-btn" onclick="closeDrawers()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+        <div class="drawer-content" id="cart-container" style="display: flex; flex-direction: column;">
+            <div class="list-empty">Ваша корзина пуста.</div>
+        </div>
+        <div style="padding: 16px; border-top: 1px solid var(--glass-border);">
+            <button class="btn-action btn-garant" id="cart-checkout-btn" style="display:none; margin: 0;" onclick="checkoutCart()">
+                🛡️ Оформить сделку
+            </button>
+        </div>
+    </div>
+
+    <!-- RIGHT DRAWER (FAV) -->
+    <div class="drawer right" id="fav-drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">Избранное</span>
+            <button class="close-btn" onclick="closeDrawers()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+        <div class="drawer-content" id="fav-container">
+            <div class="list-empty">Вы еще ничего не добавили.</div>
+        </div>
+    </div>
+
+    <!-- PRODUCT DETAIL PAGE (SPA SIMULATION) -->
+    <div class="page-view" id="page-product">
+        <div class="page-header">
+            <button class="page-nav-btn" onclick="closeProductPage()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="page-nav-btn" onclick="toggleFavCurrent()">
+                <svg id="detail-fav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+        </div>
+        <img src="" id="p-img" class="detail-img">
+        <div class="detail-content">
+            <div class="detail-title" id="p-title">Название</div>
+            <div class="detail-price" id="p-price">$0</div>
+            <div class="detail-desc" id="p-desc">Описание позиции...</div>
+        </div>
+        <div class="detail-actions">
+            <button class="btn-action btn-garant" style="margin: 0; width: 100%; border-radius: 12px;" onclick="buyViaGarant()">
+                🛡️ Безопасная покупка (Гарант)
+            </button>
+            <button class="btn-primary" onclick="addCurrentToCart()">В корзину</button>
+        </div>
+    </div>
+
+    <!-- LOCATION MODAL -->
+    <div class="drawer-overlay active" id="location-modal-overlay" style="display: flex; z-index: 200;">
+        <div class="glass modal-card" id="location-modal">
+            <h3 style="font-size:18px; font-weight:600; margin-bottom:4px;">Локация</h3>
+            <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Выберите город для фильтрации предложений.</p>
             <select class="onboarding-select" id="location-select">
-                <optgroup label="Города-миллионники">
-                    <option value="Киев (Город)">Киев</option>
-                    <option value="Одесса (Город)" selected>Одесса</option>
-                    <option value="Харьков (Город)">Харьков</option>
-                    <option value="Львов (Город)">Львов</option>
-                </optgroup>
-                <optgroup label="Райцентры и города">
-                    <option value="Измаил (Город)">Измаил</option>
-                    <option value="Умань (Город)">Умань</option>
-                    <option value="Белая Церковь (Город)">Белая Церковь</option>
-                </optgroup>
-                <optgroup label="Села / Поселки">
-                    <option value="с. Петровка (Село)">с. Петровка</option>
-                    <option value="пгт. Затока (Поселок)">пгт. Затока</option>
-                    <option value="с. Фонтанка (Село)">с. Фонтанка</option>
+                <optgroup label="Города">
+                    <option value="Киев">Киев</option>
+                    <option value="Одесса" selected>Одесса</option>
+                    <option value="Харьков">Харьков</option>
+                    <option value="Львов">Львов</option>
                 </optgroup>
             </select>
-            <button class="modal-btn primary" style="margin-top: 8px;" onclick="applyLocation()">Подтвердить и войти</button>
+            <button class="btn-primary" style="margin-top: 12px;" onclick="applyLocation()">Продолжить</button>
         </div>
     </div>
 
@@ -466,196 +446,134 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(`view-${viewId}`).classList.add('active');
-            el.classList.add('active');
+            if(el) el.classList.add('active');
             document.getElementById('app').scrollTo(0, 0);
         }
 
-        // === LOCATION LOGIC ===
-        let currentLocation = "Одесса (Город)";
-        function openLocationModal() {
-            document.getElementById('location-modal').classList.add('active');
+        // === DRAWERS ===
+        function openDrawer(id) {
+            document.getElementById('drawer-overlay').classList.add('active');
+            document.getElementById(id).classList.add('open');
         }
+        function closeDrawers() {
+            document.getElementById('drawer-overlay').classList.remove('active');
+            document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
+        }
+
+        // === LOCATION ===
         function applyLocation() {
             const val = document.getElementById('location-select').value;
-            currentLocation = val;
-            document.getElementById('current-location-label').innerText = val;
-            document.getElementById('cab-loc-text').innerText = "Локация: " + val;
-            document.getElementById('location-modal').classList.remove('active');
+            document.getElementById('cab-loc-text').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> ${val}`;
+            document.getElementById('location-modal-overlay').classList.remove('active');
+            document.getElementById('location-modal-overlay').style.display = 'none';
         }
 
-        // === TOKEN LOGIC ===
+        // === TOKENS ===
         let tokenBalance = 1450;
         function earnTokens() {
-            if(confirm("Задание: Подписаться на Telegram-канал партнера.\nНаграда: +50 Суспільствокоїн.\n\nПерейти к выполнению?")) {
-                setTimeout(() => {
-                    tokenBalance += 50;
-                    document.getElementById('token-balance').innerText = tokenBalance;
-                    alert("Успешно! Начислено 50 токенов.");
-                }, 800);
-            }
+            tokenBalance += 50;
+            document.getElementById('token-balance').innerText = tokenBalance;
+            alert("Баланс пополнен на 50 токенов (Демо).");
         }
 
-        // === SVG GENERATOR ===
+        // === SVG ICONS ===
         const svgs = {
             car: '<rect x="3" y="8" width="18" height="4" rx="1"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/><path d="M4 8l2-4h12l2 4"/>',
             truck: '<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
             tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-            scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
-            cleaning: '<path d="M12 2l3 7h-6z"/><path d="M12 9v13"/><line x1="8" y1="22" x2="16" y2="22"/>',
             briefcase: '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
-            book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
             laptop: '<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/>'
         };
-        const drawSvg = (path) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+        const drawSvg = (path) => `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 
         // === DATA INJECTION ===
+        // Promos and Categories only OPEN, no cart buttons
         const promos = [
-            { t: 'Детейлинг Центр', st: 'Комплекс со скидкой 20%', i: '111', d: 'Полная полировка кузова и химчистка. Топ-размещение.' },
-            { t: 'Доставка Пиццы', st: '24/7 по городу', i: '225', d: 'Горячая пицца за 30 минут. Промо-спонсор.' },
-            { t: 'Разработка SPA', st: 'Студия EVS.PRO', i: '0', d: 'Создание современных web-решений. Топ-размещение.' },
-            { t: 'Барбершоп', st: 'Стрижка + Борода', i: '237', d: 'Лучшие мастера города ждут вас.' }
+            { t: 'Разработка SPA', st: 'Студия EVS.PRO', i: '0', d: 'Создание web-решений.' },
+            { t: 'Детейлинг Центр', st: 'Комплекс со скидкой 20%', i: '111', d: 'Полная полировка кузова.' }
         ];
         const pWrap = document.getElementById('promo-wrap');
         promos.forEach(p => {
-            pWrap.innerHTML += `<div class="promo-card" onclick="openDetail('${p.t}', '', '${p.d}')"><img src="https://picsum.photos/id/${p.i}/600/200" class="promo-img"><div class="promo-content"><div class="promo-title">${p.t}</div><div class="promo-subtitle">${p.st}</div></div></div>`;
+            pWrap.innerHTML += `<div class="promo-card" onclick="alert('Открытие баннера: ${p.t}')"><img src="https://picsum.photos/id/${p.i}/600/200" class="promo-img"><div class="promo-content"><div class="promo-title">${p.t}</div><div class="promo-subtitle">${p.st}</div></div></div>`;
         });
-        let pIndex = 0;
-        setInterval(() => {
-            pIndex = (pIndex + 1) % promos.length;
-            pWrap.scrollTo({ left: pIndex * pWrap.clientWidth, behavior: 'smooth' });
-        }, 8000);
 
         const services = [
-            { t: 'Такси', i: svgs.car, d: 'Городские поездки. Подача 5 минут.' },
-            { t: 'Грузы', i: svgs.truck, d: 'Перевозка мебели, стройматериалов.' },
-            { t: 'Ремонт', i: svgs.tool, d: 'Сантехника, электрика, мелкий ремонт.' },
-            { t: 'Красота', i: svgs.scissors, d: 'Маникюр, стрижки на дому.' },
-            { t: 'Клининг', i: svgs.cleaning, d: 'Уборка квартир после ремонта.' },
-            { t: 'Бизнес', i: svgs.briefcase, d: 'Бухгалтерия, юридическая помощь.' },
-            { t: 'IT услуги', i: svgs.laptop, d: 'Настройка ПК, разработка, ремонт.' }
+            { t: 'Такси', i: svgs.car }, { t: 'Грузы', i: svgs.truck }, { t: 'Ремонт', i: svgs.tool },
+            { t: 'Бизнес', i: svgs.briefcase }, { t: 'IT услуги', i: svgs.laptop }
         ];
         const sWrap = document.getElementById('services-wrap');
         services.forEach(s => {
-            sWrap.innerHTML += `<div class="service-box" onclick="openDetail('${s.t}', 'Договорная', '${s.d}')"><div class="glass service-icon-wrap">${drawSvg(s.i)}</div><div class="service-title">${s.t}</div></div>`;
+            sWrap.innerHTML += `<div class="service-box" onclick="alert('Открытие категории: ${s.t}')"><div class="glass service-icon-wrap">${drawSvg(s.i)}</div><div class="service-title">${s.t}</div></div>`;
         });
 
-        const realty = [
-            { t: 'ЖК Аркадия, 1к', p: '$45 000', i: '104', d: 'Студия с видом на море. 45 кв.м. От хозяина.' },
-            { t: 'Дом у Фонтанки', p: '$120 000', i: '192', d: 'Новый коттедж, 150 кв.м, участок 6 соток.' },
-            { t: 'Офис Центр', p: '15 000 грн/мес', i: '175', d: 'Светлый офис 30 кв.м с генератором.' }
-        ];
+        // Products with Action Buttons
         const rWrap = document.getElementById('realty-wrap');
-        realty.forEach(r => {
-            rWrap.innerHTML += `<div class="glass vip-card" onclick="openDetail('${r.t}', '${r.p}', '${r.d}')"><img src="https://picsum.photos/id/${r.i}/300/200" class="vip-img"><div class="vip-body"><div class="vip-title">${r.t}</div><div class="vip-price">${r.p}</div></div></div>`;
-        });
-
-        const auto = [
-            { t: 'Toyota Camry 2018', p: '$18 500', i: '133', d: 'Идеальное состояние, один владелец. Газ/Бензин.' },
-            { t: 'BMW X5 2015', p: '$24 000', i: '183', d: 'Дизель 3.0, полная комплектация. Топ размещение.' },
-            { t: 'Honda Civic', p: '$8 500', i: '111', d: '2008 год, автомат, газовая установка.' }
-        ];
         const aWrap = document.getElementById('auto-wrap');
-        auto.forEach(a => {
-            aWrap.innerHTML += `<div class="glass vip-card" onclick="openDetail('${a.t}', '${a.p}', '${a.d}')"><img src="https://picsum.photos/id/${a.i}/300/200" class="vip-img"><div class="vip-body"><div class="vip-title">${a.t}</div><div class="vip-price">${a.p}</div></div></div>`;
-        });
-
-        const vacs = [
-            { t: 'Fullstack JS Dev', p: '$1500 - 2500', m: 'Удаленно', d: 'Знание Vue/React, Node.js, гибкий график.' },
-            { t: 'Водитель со своим авто', p: 'От 40 000 грн', m: 'Логистика', d: 'Развозка посылок.' },
-            { t: 'Менеджер продаж', p: 'Ставка + %', m: 'Офис', d: 'Теплые звонки, B2B.' }
-        ];
-        const vWrap = document.getElementById('vacancies-wrap');
-        vacs.forEach(v => {
-            vWrap.innerHTML += `<div class="glass vacancy-card" onclick="openDetail('${v.t}', '${v.p}', '${v.d} Компания: ${v.m}')"><div class="vac-title">${v.t}</div><div class="vac-price">${v.p}</div><div class="vac-meta">${v.m}</div></div>`;
-        });
-
-        const market = [
-            { t: 'MacBook Pro 14 M1', p: '$1200', i: '20', d: 'Батарея 95%, коробка. Продажа через Гаранта.' },
-            { t: 'Диван лофт', p: '12 000 грн', i: '21', d: 'Новый, стильный диван. Самовывоз.' },
-            { t: 'Гитара Fender', p: '$400', i: '145', d: 'Акустическая гитара с чехлом.' },
-            { t: 'PS5 + 3 игры', p: '18 000 грн', i: '96', d: 'Ревизия CFI-1200, два геймпада.' },
-            { t: 'iPhone 14 Pro', p: '$950', i: '1', d: 'Цвет черный космос, 128GB.' },
-            { t: 'Кофемашина', p: '$300', i: '43', d: 'Капельная кофеварка с капучинатором.' }
-        ];
         const mWrap = document.getElementById('market-wrap');
-        market.forEach(m => {
-            mWrap.innerHTML += `<div class="glass market-card" onclick="openDetail('${m.t}', '${m.p}', '${m.d}')"><img src="https://picsum.photos/id/${m.i}/200/200" class="market-img"><div class="market-body"><div class="market-title">${m.t}</div><div class="market-price">${m.p}</div></div></div>`;
-        });
 
-        const chats = [
-            { a: 'Олег', i: '15', m: 'Всем привет! Кто знает, работает ли сегодня Новая Почта на 5-й Фонтана?' },
-            { a: 'Алина', i: '20', m: 'Да, до 19:00 открыты.' },
-            { a: 'Me', i: '11', m: 'Спасибо, тоже нужно было забрать посылку.', me: true }
-        ];
-        const cWrap = document.getElementById('chat-wrap');
-        chats.forEach(c => {
-            cWrap.innerHTML += `<div class="msg-row ${c.me ? 'me' : ''}"><img src="https://i.pravatar.cc/100?img=${c.i}" class="msg-avatar"><div><div class="msg-author">${c.a}</div><div class="msg-body">${c.m}</div></div></div>`;
-        });
+        function createProductCard(wrap, p, isGrid = false) {
+            const imgSrc = `https://picsum.photos/id/${p.i}/300/200`;
+            const encodedItem = encodeURIComponent(JSON.stringify({...p, imgSrc}));
+            wrap.innerHTML += `
+                <div class="glass product-card ${isGrid ? 'market-card' : ''}" onclick="openProductPage('${encodedItem}')">
+                    <div class="product-img-wrap">
+                        <img src="${imgSrc}" class="product-img">
+                        <div class="card-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); addToFav('${encodedItem}')">❤️</button>
+                            <button class="action-btn" onclick="event.stopPropagation(); addToCart('${encodedItem}')">🛒</button>
+                        </div>
+                    </div>
+                    <div class="product-body">
+                        <div class="product-title">${p.t}</div>
+                        <div class="product-price">${p.p}</div>
+                    </div>
+                </div>`;
+        }
 
-        // === MODAL, CART & FAVORITES LOGIC ===
-        let currentItem = { title: "", price: "", desc: "" };
+        [{ t: 'ЖК Аркадия, 1к', p: '$45 000', i: '104', d: 'Студия у моря.' }, { t: 'Офис Центр', p: '15 000 грн', i: '175', d: 'Светлый офис.' }].forEach(p => createProductCard(rWrap, p));
+        [{ t: 'BMW X5 2015', p: '$24 000', i: '183', d: 'Дизель 3.0.' }, { t: 'Honda Civic', p: '$8 500', i: '111', d: '2008 год.' }].forEach(p => createProductCard(aWrap, p));
+        [
+            { t: 'MacBook Pro 14 M1', p: '$1200', i: '20', d: 'Батарея 95%, коробка.' },
+            { t: 'Диван лофт', p: '12 000 грн', i: '21', d: 'Новый, стильный диван.' },
+            { t: 'Гитара Fender', p: '$400', i: '145', d: 'Акустика.' },
+            { t: 'PS5 + 3 игры', p: '18 000 грн', i: '96', d: 'Ревизия CFI-1200.' }
+        ].forEach(p => createProductCard(mWrap, p, true));
+
+        // Chats
+        const chats = [{ a: 'Алина', i: '20', m: 'Почта до 19:00 открыта.' }, { a: 'Me', i: '11', m: 'Спасибо!', me: true }];
+        chats.forEach(c => document.getElementById('chat-wrap').innerHTML += `<div class="msg-row ${c.me ? 'me' : ''}"><img src="https://i.pravatar.cc/100?img=${c.i}" class="msg-avatar"><div><div class="msg-author">${c.a}</div><div class="msg-body">${c.m}</div></div></div>`);
+
+        // === CART & FAV LOGIC ===
         const favs = [];
         const cart = [];
+        let currentItemObj = null;
 
-        function openDetail(title, price, desc) {
-            currentItem = { title, price, desc };
-            document.getElementById('m-title').innerText = title;
-            document.getElementById('m-price').innerText = price;
-            document.getElementById('m-desc').innerText = desc;
-            document.getElementById('detail-modal').classList.add('active');
-        }
-        function closeDetailModal() {
-            document.getElementById('detail-modal').classList.remove('active');
-        }
-        function closeModal(e) {
-            if(e.target.id === 'detail-modal') closeDetailModal();
-        }
-
-        function buyViaGarant() {
-            const feeTokens = 50;
-            const feePercent = "5%";
-            
-            let msg = `🛡️ БЕЗОПАСНАЯ СДЕЛКА\n\nВы покупаете: ${currentItem.title}\nСумма: ${currentItem.price}\n\n`;
-            msg += `Администратор выступит Гарантом сделки. Деньги будут заморожены до получения товара.\n\n`;
-            msg += `Выберите способ оплаты комиссии Гаранта:\n`;
-            msg += `[ОК] - Списать ${feeTokens} Суспільствокоїн (Баланс: ${tokenBalance})\n`;
-            msg += `[Отмена] - Оплатить деньгами (${feePercent} к сумме)`;
-            
-            if(confirm(msg)) {
-                if(tokenBalance >= feeTokens) {
-                    tokenBalance -= feeTokens;
-                    document.getElementById('token-balance').innerText = tokenBalance;
-                    alert("Сделка инициирована. Токены за комиссию списаны. Ожидайте сообщения от Администратора в чате.");
-                } else {
-                    alert("Недостаточно токенов для оплаты комиссии. Выполните задания в Кабинете.");
-                }
-            } else {
-                alert(`Сделка инициирована. Комиссия ${feePercent} будет включена в итоговый счет. Ожидайте Администратора.`);
-            }
-            closeDetailModal();
-        }
-
-        function saveToFav() {
-            if(!favs.some(f => f.title === currentItem.title)) {
-                favs.push({...currentItem});
+        function addToFav(encodedItem) {
+            const item = JSON.parse(decodeURIComponent(encodedItem));
+            if(!favs.some(f => f.t === item.t)) {
+                favs.push(item);
                 renderFavs();
-                alert('Добавлено в избранное!');
+                alert(`❤️ Добавлено: ${item.t}`);
             }
-            closeDetailModal();
         }
+        function addToCart(encodedItem) {
+            const item = JSON.parse(decodeURIComponent(encodedItem));
+            cart.push(item);
+            updateCartUI();
+            alert(`🛒 В корзине: ${item.t}`);
+        }
+
         function renderFavs() {
             const fCont = document.getElementById('fav-container');
-            if(favs.length === 0) {
-                fCont.innerHTML = '<div class="list-empty">Здесь пока ничего нет.<br>Сохраняйте карточки для быстрого доступа.</div>';
-                return;
-            }
+            if(favs.length === 0) { fCont.innerHTML = '<div class="list-empty">Вы еще ничего не добавили.</div>'; return; }
             fCont.innerHTML = '';
             favs.forEach((f, idx) => {
                 fCont.innerHTML += `
                     <div class="glass list-item">
+                        <img src="${f.imgSrc}" class="list-img">
                         <div class="list-item-info">
-                            <span class="list-item-title">${f.title}</span>
-                            <span class="list-item-price">${f.price}</span>
+                            <span class="list-item-title">${f.t}</span>
+                            <span class="list-item-price">${f.p}</span>
                         </div>
                         <button class="btn-remove" onclick="removeFav(${idx})">&times;</button>
                     </div>`;
@@ -663,49 +581,65 @@
         }
         function removeFav(idx) { favs.splice(idx, 1); renderFavs(); }
 
-        function addToCart() {
-            cart.push({...currentItem});
-            updateCartUI();
-            alert('Товар добавлен в корзину!');
-            closeDetailModal();
-        }
         function updateCartUI() {
-            const cBadge = document.getElementById('cart-badge');
+            const cBadgeTop = document.getElementById('cart-badge-top');
             const cCont = document.getElementById('cart-container');
             const cBtn = document.getElementById('cart-checkout-btn');
             
             if(cart.length > 0) {
-                cBadge.style.display = 'flex';
-                cBadge.innerText = cart.length;
+                cBadgeTop.style.display = 'flex'; cBadgeTop.innerText = cart.length;
                 cBtn.style.display = 'flex';
                 cCont.innerHTML = '';
                 cart.forEach((c, idx) => {
                     cCont.innerHTML += `
                         <div class="glass list-item">
+                            <img src="${c.imgSrc}" class="list-img">
                             <div class="list-item-info">
-                                <span class="list-item-title">${c.title}</span>
-                                <span class="list-item-price">${c.price}</span>
+                                <span class="list-item-title">${c.t}</span>
+                                <span class="list-item-price">${c.p}</span>
                             </div>
                             <button class="btn-remove" onclick="removeCart(${idx})">&times;</button>
                         </div>`;
                 });
             } else {
-                cBadge.style.display = 'none';
+                cBadgeTop.style.display = 'none';
                 cBtn.style.display = 'none';
-                cCont.innerHTML = '<div class="list-empty">Корзина пуста.<br>Добавляйте товары для безопасной сделки.</div>';
+                cCont.innerHTML = '<div class="list-empty">Ваша корзина пуста.</div>';
             }
         }
         function removeCart(idx) { cart.splice(idx, 1); updateCartUI(); }
-
         function checkoutCart() {
             if(cart.length === 0) return;
-            alert(`Переход к массовому оформлению сделки через Гаранта для ${cart.length} позиций.`);
-            cart.length = 0; // очищаем корзину после оформления
-            updateCartUI();
+            alert(`Переход к оформлению сделки через Гаранта (${cart.length} позиций).`);
+            cart.length = 0; updateCartUI(); closeDrawers();
         }
 
-        function handleSearch(query) {
-            // Заглушка фильтрации
+        // === PRODUCT PAGE (SPA) LOGIC ===
+        function openProductPage(encodedItem) {
+            const item = JSON.parse(decodeURIComponent(encodedItem));
+            currentItemObj = item;
+            document.getElementById('p-img').src = item.imgSrc;
+            document.getElementById('p-title').innerText = item.t;
+            document.getElementById('p-price').innerText = item.p;
+            document.getElementById('p-desc').innerText = item.d;
+            document.getElementById('page-product').classList.add('active');
+        }
+        function closeProductPage() {
+            document.getElementById('page-product').classList.remove('active');
+            currentItemObj = null;
+        }
+        function addCurrentToCart() {
+            if(currentItemObj) {
+                addToCart(encodeURIComponent(JSON.stringify(currentItemObj)));
+                closeProductPage();
+            }
+        }
+        function toggleFavCurrent() {
+            if(currentItemObj) { addToFav(encodeURIComponent(JSON.stringify(currentItemObj))); }
+        }
+        function buyViaGarant() {
+            alert(`🛡️ Инициирована безопасная сделка на сумму ${currentItemObj.p}. Ожидайте Гаранта.`);
+            closeProductPage();
         }
     </script>
 </body>
